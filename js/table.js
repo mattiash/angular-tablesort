@@ -43,6 +43,10 @@ tableSortModule.directive('sorttable', function() {
 		return parseInt(item[$scope.sortExpression]);
 	    }
 	    
+	    $scope.sortFun = function( a, b ) {
+		return a[$scope.sortExpression] > b[$scope.sortExpression] ? 1 : -1;
+	    };
+	    
 	}
     }
 } );
@@ -64,3 +68,24 @@ tableSortModule.directive('sort', function() {
 	}
     } 
 });
+
+tableSortModule.directive("sorttablerepeat", function() {
+    return {
+        priority: 2000,
+        compile: function(tElement, tAttrs, transclude) {
+            tAttrs.ngRepeat += " | tablesortOrderBy:sortFun";
+            console.log(tAttrs);
+        }
+    };
+} );
+
+tableSortModule.filter( 'tablesortOrderBy', function( $parse ){
+    return function(array, sortfun ) {
+	var arrayCopy = [];
+	for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
+	
+//	console.log(expr);
+	
+	return arrayCopy.sort( sortfun );
+  } 
+} );
