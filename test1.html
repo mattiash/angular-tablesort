@@ -23,36 +23,17 @@
 <div ng-app="myApp">
   <br /><br />
   <div ng-controller="ShoppingCartCtrl">        
-    <h1>Table 1</h2>
-
-    <table border="1" sorttable>
-      <thead>
-	<tr>
-	  <th sort="Name">Name</th>
-	  <th sort="parseInt">Price</th>
-	  <th sort="Quantity">Quantity</th>
-	</tr>
-      </thead>
-      <tbody>
-	<tr ng-repeat="item in items | orderBy:mySortFunction">
-	  <td>{{item.Name}}</td>
-	  <td>{{item.Price | currency}}</td>
-	  <td>{{item.Quantity}}</td>
-	</tr>
-      </tbody>
-    </table>
-
     <h1>Sorttable</h2>
-    <table border="1" sorttable>
+    <table border="1" st-wrapper>
       <thead>
 	<tr>
-	  <th sort="Name">Name</th>
-	  <th sort="Price parseInt">Price</th>
-	  <th sort="Quantity">Quantity</th>
+	  <th st-criteria="Name">Name</th>
+	  <th st-criteria="Price parseInt">Price</th>
+	  <th st-criteria="Quantity">Quantity</th>
 	</tr>
       </thead>
       <tbody>
-	<tr ng-repeat="item in items" sorttablerepeat>
+	<tr ng-repeat="item in items" st-repeat>
 	  <td>{{item.Name}}</td>
 	  <td>{{item.Price | currency}}</td>
 	  <td>{{item.Quantity}}</td>

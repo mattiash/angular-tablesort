@@ -14,7 +14,7 @@ function ShoppingCartCtrl($scope)  {
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
-tableSortModule.directive('sorttable', function( $log ) {
+tableSortModule.directive('stWrapper', function( $log ) {
     return {
 	scope: true,
 	controller: function($scope) {
@@ -121,16 +121,16 @@ tableSortModule.directive('sorttable', function( $log ) {
     };
 } );
 
-tableSortModule.directive('sort', function() {
+tableSortModule.directive('stCriteria', function() {
     return {
-	require: "^sorttable",
+	require: "^stWrapper",
 	link: function(scope, element, attrs, sortTableCtrl) {
 	    var clickingCallback = function(event) {
 		if( event.shiftKey ) {
-		    sortTableCtrl.addSortField(attrs.sort, element);
+		    sortTableCtrl.addSortField(attrs.stCriteria, element);
 		}
 		else {
-		    sortTableCtrl.setSortField(attrs.sort, element);
+		    sortTableCtrl.setSortField(attrs.stCriteria, element);
 		}
 	    };
 	    element.bind('click', clickingCallback);
@@ -139,8 +139,9 @@ tableSortModule.directive('sort', function() {
     }
 });
 
-tableSortModule.directive("sorttablerepeat", function() {
+tableSortModule.directive("stRepeat", function() {
     return {
+	require: "^stWrapper",
         priority: 2000,
         compile: function(tElement, tAttrs, transclude) {
             tAttrs.ngRepeat += " | tablesortOrderBy:sortFun";
