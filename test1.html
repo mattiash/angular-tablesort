@@ -12,6 +12,7 @@
     <table border="1" ts-wrapper>
       <thead>
 	<tr>
+	  <th>Select</th>
 	  <th ts-criteria="Id">Id</th>
 	  <th ts-criteria="Name|lowercase" ts-default>Name</th>
 	  <th ts-criteria="Price|parseFloat">Price</th>
@@ -20,6 +21,7 @@
       </thead>
       <tbody>
 	<tr ng-repeat="item in items" ts-repeat>
+	  <td><input type="checkbox"></input>
 	  <td>{{item.Id}}</td>
 	  <td>{{item.Name}}</td>
 	  <td>{{item.Price | currency}}</td>
