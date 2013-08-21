@@ -13,7 +13,7 @@ function ShoppingCartCtrl($scope)  {
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
-tableSortModule.directive('stWrapper', function( $log ) {
+tableSortModule.directive('tsWrapper', function( $log, $parse ) {
     return {
 	scope: true,
 	controller: function($scope) {
@@ -21,18 +21,7 @@ tableSortModule.directive('stWrapper', function( $log ) {
 	    $scope.headings = [];
 
 	    var parse_sortexpr = function( expr ) {
-		var e = expr.split(" ");
-		if( e.length > 2 ) {
-		    $log.error( "tablesorter: Invalid sort expression " + expr );
-		    return [null,null, false];
-		}
-		else if( e.length === 2 ) {
-		    e[1] = eval(e[1]);
-		    return e.concat([false]);
-		}
-		else {
-		    return e.concat( [null, false] );
-		}
+		return [$parse( expr ), null, false];
 	    };
 
 	    this.setSortField = function( sortexpr, element ) {
@@ -41,52 +30,50 @@ tableSortModule.directive('stWrapper', function( $log ) {
 		if( $scope.sortExpression.length === 1
 		    && $scope.sortExpression[0][0] === expr[0] ) {
 		    if( $scope.sortExpression[0][2] ) {
-			element.removeClass( "sorttable-desc" );
-			element.addClass( "sorttable-asc" );
+			element.removeClass( "tablesort-desc" );
+			element.addClass( "tablesort-asc" );
 			$scope.sortExpression[0][2] = false;
 		    }
 		    else {
-			element.removeClass( "sorttable-asc" );
-			element.addClass( "sorttable-desc" );
+			element.removeClass( "tablesort-asc" );
+			element.addClass( "tablesort-desc" );
 			$scope.sortExpression[0][2] = true;
 		    }
 		}
 		else {
 		    for( i=0; i<$scope.headings.length; i=i+1 ) {
 			$scope.headings[i]
-			    .removeClass( "sorttable-desc" )
-			    .removeClass( "sorttable-asc" );
+			    .removeClass( "tablesort-desc" )
+			    .removeClass( "tablesort-asc" );
 		    }
-		    element.addClass( "sorttable-asc" );
+		    element.addClass( "tablesort-asc" );
   		    $scope.sortExpression = [expr];
 		}
-		$scope.$apply();
 	    };
 
 	    this.addSortField = function( sortexpr, element ) {
 		var i;
 		var toggle_order = false;
-		var expr = parse_sortexpr( sortexpr )
+		var expr = parse_sortexpr( sortexpr );
 		for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
 		    if( $scope.sortExpression[i][0] === expr[0] ) {
 			if( $scope.sortExpression[i][2] ) {
-			    element.removeClass( "sorttable-desc" );
-			    element.addClass( "sorttable-asc" );
+			    element.removeClass( "tablesort-desc" );
+			    element.addClass( "tablesort-asc" );
 			    $scope.sortExpression[i][2] = false;
 			}
 			else {
-			    element.removeClass( "sorttable-asc" );
-			    element.addClass( "sorttable-desc" );
+			    element.removeClass( "tablesort-asc" );
+			    element.addClass( "tablesort-desc" );
 			    $scope.sortExpression[i][2] = true;
 			}
 			toggle_order = true;
 		    }
 		}
 		if( !toggle_order ) {
-	            element.addClass( "sorttable-asc" );
+	            element.addClass( "tablesort-asc" );
 	            $scope.sortExpression.push( expr );
 		}
-		$scope.$apply();
 	    };
 
 	    this.registerHeading = function( headingelement ) {
@@ -96,12 +83,8 @@ tableSortModule.directive('stWrapper', function( $log ) {
 	    $scope.sortFun = function( a, b ) {
 		var i, aval, bval, descending;
 		for( i=0; i<$scope.sortExpression.length; i=i+1 ){
-		    aval = a[$scope.sortExpression[i][0]];
-		    bval = b[$scope.sortExpression[i][0]];
-		    if( $scope.sortExpression[i][1] ) {
-			aval = $scope.sortExpression[i][1]( aval );
-			bval = $scope.sortExpression[i][1]( bval );
-		    }
+		    aval = $scope.sortExpression[i][0](a);
+		    bval = $scope.sortExpression[i][0](b);
 		    filterFun = b[$scope.sortExpression[i][1]];
 	            if( filterFun ) {
 			aval = filterFun( aval );
@@ -121,27 +104,32 @@ tableSortModule.directive('stWrapper', function( $log ) {
     };
 } );
 
-tableSortModule.directive('stCriteria', function() {
+tableSortModule.directive('tsCriteria', function() {
     return {
-	require: "^stWrapper",
-	link: function(scope, element, attrs, sortTableCtrl) {
+	require: "^tsWrapper",
+	link: function(scope, element, attrs, tsWrapperCtrl) {
 	    var clickingCallback = function(event) {
-		if( event.shiftKey ) {
-		    sortTableCtrl.addSortField(attrs.stCriteria, element);
-		}
-		else {
-		    sortTableCtrl.setSortField(attrs.stCriteria, element);
-		}
+		scope.$apply( function() {
+		    if( event.shiftKey ) {
+			tsWrapperCtrl.addSortField(attrs.tsCriteria, element);
+		    }
+		    else {
+			tsWrapperCtrl.setSortField(attrs.tsCriteria, element);
+		    }
+		} );
 	    };
 	    element.bind('click', clickingCallback);
-	    sortTableCtrl.registerHeading( element );
+	    if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
+		tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
+	    }
+	    tsWrapperCtrl.registerHeading( element );
 	}
-    }
+    };
 });
 
-tableSortModule.directive("stRepeat", function() {
+tableSortModule.directive("tsRepeat", function() {
     return {
-	require: "^stWrapper",
+	require: "^tsWrapper",
         priority: 2000,
         compile: function(tElement, tAttrs, transclude) {
             tAttrs.ngRepeat += " | tablesortOrderBy:sortFun";
@@ -149,10 +137,22 @@ tableSortModule.directive("stRepeat", function() {
     };
 } );
 
-tableSortModule.filter( 'tablesortOrderBy', function( $parse ){
+tableSortModule.filter( 'tablesortOrderBy', function(){
     return function(array, sortfun ) {
 	var arrayCopy = [];
 	for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
 	return arrayCopy.sort( sortfun );
+    };
+} );
+
+tableSortModule.filter( 'parseInt', function(){
+    return function(input) {
+	return parseInt( input );
+    };
+} );
+
+tableSortModule.filter( 'parseFloat', function(){
+    return function(input) {
+	return parseFloat( input );
     };
 } );
