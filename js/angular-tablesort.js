@@ -1,3 +1,8 @@
+/*
+ angular-tablesort v1.0
+ (c) 2013 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
+ License: MIT
+*/
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
