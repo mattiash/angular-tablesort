@@ -3,6 +3,8 @@ AngularJS Tablesort
 
 Allow tables to be sorted by clicking their headings.
 
+Web site: [https://github.com/mattiash/angular-tablesort](https://github.com/mattiash/angular-tablesort)
+
 Background
 ----------
 
