@@ -83,6 +83,12 @@ tableSortModule.directive('tsWrapper', function( $log, $parse ) {
                         aval = filterFun( aval );
                         bval = filterFun( bval );
                     }
+                    if( aval === undefined ) {
+                        aval = "";
+                    }
+                    if( bval === undefined ) {
+                       bval = "";
+                    }
                     descending = $scope.sortExpression[i][2];
                     if( aval > bval ) {
                         return descending ? -1 : 1;
