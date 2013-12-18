@@ -31,5 +31,3 @@ table .tablesort-asc,table .tablesort-desc{
 table .tablesort-sortable:hover:after, table .tablesort-asc:after, table .tablesort-desc:after {
     visibility:visible;
 }
-
-

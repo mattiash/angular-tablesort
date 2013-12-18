@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Angular Tablesort</title>
+    <title>Angular Tablesort</title>
 </head>
 <link rel="stylesheet" href="tablesort.css"></link>
 <body>
 
 <div ng-app="myApp">
-  <div ng-controller="tableTestCtrl">
-    <h1>Angular Tablesort</h1>
-    <table border="1" ts-wrapper>
-      <thead>
-	<tr>
-	  <th>Select</th>
-	  <th ts-criteria="Id">Id</th>
-	  <th ts-criteria="Name|lowercase" ts-default>Name</th>
-	  <th ts-criteria="Price|parseFloat">Price</th>
-	  <th ts-criteria="Quantity|parseInt">Quantity</th>
-	</tr>
-      </thead>
-      <tbody>
-	<tr ng-repeat="item in items" ts-repeat>
-	  <td><input type="checkbox"></input>
-	  <td>{{item.Id}}</td>
-	  <td>{{item.Name}}</td>
-	  <td>{{item.Price | currency}}</td>
-	  <td>{{item.Quantity}}</td>
-	</tr>
-      </tbody>
-    </table>
-    <br />
-  </div>
+    <div ng-controller="tableTestCtrl">
+        <h1>Angular Tablesort</h1>
+        <table border="1" ts-wrapper>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th ts-criteria="Id">Id</th>
+                <th ts-criteria="Name|lowercase" ts-default>Name</th>
+                <th ts-criteria="Price|parseFloat">Price</th>
+                <th ts-criteria="Quantity|parseInt">Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in items" ts-repeat>
+                <td><input type="checkbox"></input>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <br />
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
-var myApp = angular.module( 'myApp', ['tableSort' ] );
+    var myApp = angular.module( 'myApp', ['tableSort' ] );
 
-function tableTestCtrl($scope)  {
-    $scope.items = [
-	{Id: "01", Name: "A", Price: "1.00", Quantity: "1"},
-	{Id: "02", Name: "B", Price: "10.00", Quantity: "1"},
-	{Id: "04", Name: "C", Price: "9.50", Quantity: "10"},
-	{Id: "03", Name: "a", Price: "9.00", Quantity: "2"},
-	{Id: "06", Name: "b", Price: "100.00", Quantity: "2"},
-	{Id: "05",Name: "c", Price: "1.20", Quantity: "2"},
-    ];
-}
+    function tableTestCtrl($scope)  {
+        $scope.items = [
+            {Id: "01", Name: "A", Price: "1.00", Quantity: "1"},
+            {Id: "02", Name: "B", Price: "10.00", Quantity: "1"},
+            {Id: "04", Name: "C", Price: "9.50", Quantity: "10"},
+            {Id: "03", Name: "a", Price: "9.00", Quantity: "2"},
+            {Id: "06", Name: "b", Price: "100.00", Quantity: "2"},
+            {Id: "05",Name: "c", Price: "1.20", Quantity: "2"}
+        ];
+    }
 </script>
 </body>
 </html>
