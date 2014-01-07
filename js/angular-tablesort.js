@@ -139,6 +139,7 @@ tableSortModule.directive("tsRepeat", function() {
 
 tableSortModule.filter( 'tablesortOrderBy', function(){
     return function(array, sortfun ) {
+        if(!array) return;
         var arrayCopy = [];
         for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
         return arrayCopy.sort( sortfun );
