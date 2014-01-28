@@ -7,6 +7,7 @@
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.directive('tsWrapper', function( $log, $parse ) {
+    'use strict';
     return {
         scope: true,
         controller: function($scope) {
@@ -74,7 +75,7 @@ tableSortModule.directive('tsWrapper', function( $log, $parse ) {
             };
 
             $scope.sortFun = function( a, b ) {
-                var i, aval, bval, descending;
+                var i, aval, bval, descending, filterFun;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
