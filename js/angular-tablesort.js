@@ -122,6 +122,9 @@ tableSortModule.directive('tsCriteria', function() {
             element.addClass('tablesort-sortable');
             if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
+                if( attrs.tsDefault == "descending" ) {
+                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
+                }
             }
             tsWrapperCtrl.registerHeading( element );
         }

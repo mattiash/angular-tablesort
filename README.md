@@ -43,7 +43,8 @@ The `ts-wrapper` attribute must be set on element that surrounds both the headin
 
 The `ts-criteria` attribute tells tablesort which expression it should sort on when that element is clicked. Normally, the ts-criteria is the same as the expression that is shown in the column, but it doesn't have to be. The ts-criteria can also be filtered using the normal AngularJS filter syntax. Tablesort includes two filters parseInt and parseFloat that use the javascript functions of the same name, but any filter can be used.
 
-The `ts-default` attribute can be set on one or more columns to sort on them by default.
+The `ts-default` attribute can be set on one or more columns to sort on them in ascending order by default.
+To sort in descending order, set ts-default to "descending"
 
 The `ts-repeat` attribute must be set on the element with ng-repeat.
 
