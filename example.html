@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Angular Tablesort</title>
+    <link rel="stylesheet" href="tablesort.css"/>
 </head>
-<link rel="stylesheet" href="tablesort.css"></link>
 <body>
 
 <div ng-app="myApp">
@@ -21,7 +21,29 @@
             </thead>
             <tbody>
             <tr ng-repeat="item in items" ts-repeat>
-                <td><input type="checkbox"></input>
+                <td><input type="checkbox"></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h1>Empty table</h1>
+        <table border="1" ts-wrapper>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th ts-criteria="Id">Id</th>
+                <th ts-criteria="Name|lowercase" ts-default>Name</th>
+                <th ts-criteria="Price|parseFloat">Price</th>
+                <th ts-criteria="Quantity|parseInt">Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in noitems" ts-repeat>
+                <td><input type="checkbox"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>
                 <td>{{item.Price | currency}}</td>
@@ -33,7 +55,7 @@
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
     var myApp = angular.module( 'myApp', ['tableSort' ] );
@@ -47,6 +69,7 @@
             {Id: "06", Name: "b", Price: "100.00", Quantity: "2"},
             {Id: "05",Name: "c", Price: "1.20", Quantity: "2"}
         ];
+        $scope.noitems = []
     }
 </script>
 </body>

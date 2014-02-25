@@ -131,12 +131,20 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", function() {
+tableSortModule.directive("tsRepeat", function($compile) {
     return {
+        terminal: true,
         require: "^tsWrapper",
-        priority: 2000,
-        compile: function(tElement, tAttrs, transclude) {
-            tAttrs.ngRepeat += " | tablesortOrderBy:sortFun";
+        priority: 1000000,
+        link: function(scope, element) {
+            var clone = element.clone();
+            var tdcount = element[0].childElementCount;
+            element.html("<td colspan='"+tdcount+"'></td>");
+            element[0].className += " showIfLast";
+            clone.removeAttr("ts-repeat");
+            clone.attr("ng-repeat", clone.attr("ng-repeat") + "| tablesortOrderBy:sortFun");
+            var clonedElement = $compile(clone)(scope);
+            element.after(clonedElement);
         }
     };
 } );

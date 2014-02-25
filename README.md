@@ -14,6 +14,9 @@ The goal with this module is to make it just as easy to add sorting to AngularJS
 
 Click once on a heading to sort ascending, twice for descending. Use shift-click to sort on more than one column.
 
+Additionally, these directives also makes it easy to add a default row that is shown in empty tables to make
+it explicit that the table is intentionally empty and not just broken.
+
 Usage
 -----
 
@@ -52,3 +55,6 @@ CSS
 ---
 
 All table headings that can be sorted on is styled with css-class `tablesort-sortable`. The table headings that the table is currently sorted on is styled with `tablesort-asc` or `tablesort-desc` classes depending on the sort-direction. A stylesheet is included to show that it works, but you probably want to build your own.
+
+The content and look of the default data for empty tables is controlled via css. It is inserted as one empty `<td>` spanning
+all columns and placed inside a `<tr>` with class `showIfLast` The `<tr>` is placed at the top of each table.
