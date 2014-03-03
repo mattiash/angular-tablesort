@@ -20,7 +20,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in items" ts-repeat>
+            <tr ng-repeat="item in items track by item.Id" ts-repeat>
                 <td><input type="checkbox"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>

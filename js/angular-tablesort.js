@@ -139,10 +139,15 @@ tableSortModule.directive("tsRepeat", function($compile) {
         link: function(scope, element) {
             var clone = element.clone();
             var tdcount = element[0].childElementCount;
+            var repeatExpr = clone.attr("ng-repeat");
+            repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
+                "$1 in $2 | tablesortOrderBy:sortFun$3");
+
             element.html("<td colspan='"+tdcount+"'></td>");
             element[0].className += " showIfLast";
             clone.removeAttr("ts-repeat");
-            clone.attr("ng-repeat", clone.attr("ng-repeat") + "| tablesortOrderBy:sortFun");
+
+            clone.attr("ng-repeat", repeatExpr);
             var clonedElement = $compile(clone)(scope);
             element.after(clonedElement);
         }
