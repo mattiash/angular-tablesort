@@ -6,11 +6,11 @@
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
-tableSortModule.directive('tsWrapper', function( $log, $parse ) {
+tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse ) {
     'use strict';
     return {
         scope: true,
-        controller: function($scope) {
+        controller: ['$scope', function($scope) {
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -100,9 +100,9 @@ tableSortModule.directive('tsWrapper', function( $log, $parse ) {
                 }
                 return 0;
             };
-        }
+        }]
     };
-} );
+}]);
 
 tableSortModule.directive('tsCriteria', function() {
     return {
@@ -131,7 +131,7 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", function($compile) {
+tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     return {
         terminal: true,
         require: "^tsWrapper",
@@ -152,7 +152,7 @@ tableSortModule.directive("tsRepeat", function($compile) {
             element.after(clonedElement);
         }
     };
-} );
+}]);
 
 tableSortModule.filter( 'tablesortOrderBy', function(){
     return function(array, sortfun ) {
