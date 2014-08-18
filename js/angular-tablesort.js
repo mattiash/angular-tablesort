@@ -1,16 +1,16 @@
 /*
- angular-tablesort v1.0.3
+ angular-tablesort v1.0.5
  (c) 2013 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
  License: MIT
 */
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
-tableSortModule.directive('tsWrapper', function( $log, $parse ) {
+tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse ) {
     'use strict';
     return {
         scope: true,
-        controller: function($scope) {
+        controller: ['$scope', function($scope) {
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -70,6 +70,10 @@ tableSortModule.directive('tsWrapper', function( $log, $parse ) {
                 }
             };
 
+            this.setTrackBy = function( trackBy ) {
+                $scope.trackBy = trackBy;
+            };
+
             this.registerHeading = function( headingelement ) {
                 $scope.headings.push( headingelement );
             };
@@ -98,11 +102,30 @@ tableSortModule.directive('tsWrapper', function( $log, $parse ) {
                         return descending ? 1 : -1;
                     }
                 }
+
+                // All the sort fields were equal. If there is a "track by" expression,
+                // use that as a tiebreaker to make the sort result stable.
+                if( $scope.trackBy ) {
+                    aval = a[$scope.trackBy];
+                    bval = b[$scope.trackBy];
+                    if( aval === undefined ) {
+                        aval = "";
+                    }
+                    if( bval === undefined ) {
+                        bval = "";
+                    }
+                    if( aval > bval ) {
+                        return descending ? -1 : 1;
+                    }
+                    else if( aval < bval ) {
+                        return descending ? 1 : -1;
+                    }
+                }
                 return 0;
             };
-        }
+        }]
     };
-} );
+}]);
 
 tableSortModule.directive('tsCriteria', function() {
     return {
@@ -131,15 +154,21 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", function($compile) {
+tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     return {
         terminal: true,
         require: "^tsWrapper",
         priority: 1000000,
-        link: function(scope, element) {
+        link: function(scope, element, attrs, tsWrapperCtrl) {
             var clone = element.clone();
             var tdcount = element[0].childElementCount;
             var repeatExpr = clone.attr("ng-repeat");
+            var trackBy = null;
+            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
+            if( trackByMatch ) {
+                trackBy = trackByMatch[1];
+                tsWrapperCtrl.setTrackBy(trackBy);
+            }
             repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
                 "$1 in $2 | tablesortOrderBy:sortFun$3");
 
@@ -152,7 +181,7 @@ tableSortModule.directive("tsRepeat", function($compile) {
             element.after(clonedElement);
         }
     };
-} );
+}]);
 
 tableSortModule.filter( 'tablesortOrderBy', function(){
     return function(array, sortfun ) {
