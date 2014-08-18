@@ -104,7 +104,7 @@
     &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
-    &lt;tr ng-repeat="item in items" <b>ts-repeat</b>&gt;
+    &lt;tr ng-repeat="item in items track by item.Id" <b>ts-repeat</b>&gt;
       &lt;td&gt;{{item.Name}}&lt;/td&gt;
       &lt;td&gt;{{item.Price | currency}}&lt;/td&gt;
       &lt;td&gt;{{item.Quantity}}&lt;/td&gt;
