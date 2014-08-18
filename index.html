@@ -78,7 +78,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="item in items" ts-repeat>
+                        <tr ng-repeat="item in items track by item.Id" ts-repeat>
                             <td>{{item.Id}}</td>
                             <td>{{item.Name}}</td>
                             <td>{{item.Price | currency}}</td>
@@ -195,7 +195,7 @@ bower install angular-tablesort
 </div>
 <!-- /container -->
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
     var myApp = angular.module('myApp', ['tableSort' ]);
