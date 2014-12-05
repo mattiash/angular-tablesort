@@ -172,7 +172,13 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
                 "$1 in $2 | tablesortOrderBy:sortFun$3");
 
-            element.html("<td colspan='"+tdcount+"'></td>");
+            while (element[0].firstChild) {
+              element[0].removeChild(element[0].firstChild);
+            }
+            var td = document.createElement("td");
+            td.colSpan=tdcount;
+            element[0].appendChild(td);
+
             element[0].className += " showIfLast";
             clone.removeAttr("ts-repeat");
 
