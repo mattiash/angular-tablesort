@@ -162,7 +162,11 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
         link: function(scope, element, attrs, tsWrapperCtrl) {
             var clone = element.clone();
             var tdcount = element[0].childElementCount;
-            var repeatExpr = clone.attr("ng-repeat");
+            var ngRepeatDirective = "ng-repeat";
+            if( typeof(clone.attr(ngRepeatDirective)) === "undefined" ) {
+                ngRepeatDirective = "data-ng-repeat";
+            }
+            var repeatExpr = clone.attr(ngRepeatDirective);
             var trackBy = null;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
             if( trackByMatch ) {
@@ -182,7 +186,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             element[0].className += " showIfLast";
             clone.removeAttr("ts-repeat");
 
-            clone.attr("ng-repeat", repeatExpr);
+            clone.attr(ngRepeatDirective, repeatExpr);
             var clonedElement = $compile(clone)(scope);
             element.after(clonedElement);
         }
