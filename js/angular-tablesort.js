@@ -169,8 +169,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 trackBy = trackByMatch[1];
                 tsWrapperCtrl.setTrackBy(trackBy);
             }
-            repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
-                "$1 in $2 | tablesortOrderBy:sortFun$3");
+            repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun");
 
             while (element[0].firstChild) {
               element[0].removeChild(element[0].firstChild);
