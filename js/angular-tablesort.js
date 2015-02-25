@@ -204,12 +204,12 @@ tableSortModule.filter( 'tablesortOrderBy', function(){
 
 tableSortModule.filter( 'parseInt', function(){
     return function(input) {
-        return parseInt( input );
+        return parseInt( input ) || null;
     };
 } );
 
 tableSortModule.filter( 'parseFloat', function(){
     return function(input) {
-        return parseFloat( input );
+        return parseFloat( input ) || null;
     };
 } );
