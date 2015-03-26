@@ -54,6 +54,9 @@ The `ts-repeat` attribute must be set on the element with ng-repeat.
 If the `ng-repeat` expression contains a `track by` statement (which is generally a good idea), that expression will
 be used to provide a [stable](http://en.wikipedia.org/wiki/Sorting_algorithm#Stability) sort result.
 
+If the `ng-repeat` expression contains a `limitTo` statement, you should use `tablesort` statement before `limitTo`.
+
+
 CSS
 ---
 
