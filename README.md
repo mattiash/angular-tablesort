@@ -51,6 +51,20 @@ To sort in descending order, set ts-default to "descending"
 
 The `ts-repeat` attribute must be set on the element with ng-repeat.
 
+By default, the sorting will be done as the last operation in the ng-repeat expression. To override this behavior, use an explicit `tablesort` directive as part of your ng-repeat expression. E.g.
+
+```html
+    <tr ng-repeat="item in items | limitTo: 10" ts-repeat>
+```
+
+This will first select the first 10 items in `items` and then sort them. Alternatively, you can insert an explicit tablesort in the pipe:
+
+```html
+    <tr ng-repeat="item in items | tablesort | limitTo: 10" ts-repeat>
+```
+
+This will first sort the rows according to your specification and then only show the first 10 rows.
+
 If the `ng-repeat` expression contains a `track by` statement (which is generally a good idea), that expression will
 be used to provide a [stable](http://en.wikipedia.org/wiki/Sorting_algorithm#Stability) sort result.
 

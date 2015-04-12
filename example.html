@@ -30,7 +30,7 @@
             </tbody>
         </table>
 
-        <h1>Angular Tablesort with tablesort filter</h1>
+        <h1>Angular Tablesort with tablesort filter and max 5 entries</h1>
         <table border="1" ts-wrapper>
             <thead>
             <tr>
@@ -42,7 +42,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in items | tablesort track by item.Id" ts-repeat>
+            <tr ng-repeat="item in items | tablesort | limitTo: 5 track by item.Id" ts-repeat>
                 <td><input type="checkbox"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>
@@ -78,22 +78,23 @@
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
-    var myApp = angular.module( 'myApp', ['tableSort' ] );
+    var myApp = angular.module( 'myApp', ['tableSort' ] )
+            .controller( "tableTestCtrl",     function tableTestCtrl($scope)  {
+                $scope.items = [
+                    {Id: "01", Name: "A", Price: "1.00", Quantity: "1"},
+                    {Id: "02", Name: "B", Price: "10.00", Quantity: "1"},
+                    {Id: "04", Name: "C", Price: "9.50", Quantity: "10"},
+                    {Id: "03", Name: "a", Price: "9.00", Quantity: "2"},
+                    {Id: "06", Name: "b", Price: "100.00", Quantity: "2"},
+                    {Id: "05",Name: "c", Price: "1.20", Quantity: "2"}
+                ];
+                $scope.noitems = []
+            }
+    );
 
-    function tableTestCtrl($scope)  {
-        $scope.items = [
-            {Id: "01", Name: "A", Price: "1.00", Quantity: "1"},
-            {Id: "02", Name: "B", Price: "10.00", Quantity: "1"},
-            {Id: "04", Name: "C", Price: "9.50", Quantity: "10"},
-            {Id: "03", Name: "a", Price: "9.00", Quantity: "2"},
-            {Id: "06", Name: "b", Price: "100.00", Quantity: "2"},
-            {Id: "05",Name: "c", Price: "1.20", Quantity: "2"}
-        ];
-        $scope.noitems = []
-    }
 </script>
 </body>
 </html>
