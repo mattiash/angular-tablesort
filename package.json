@@ -1,0 +1,11 @@
+{
+  "name": "angular-tablesort",
+  "version": "1.0.6",
+  "description": "Sort angularjs tables easily",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tamlyn/angular-tablesort.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/tamlyn/angular-tablesort"
+}
