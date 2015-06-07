@@ -17,6 +17,16 @@ Click once on a heading to sort ascending, twice for descending. Use shift-click
 Additionally, these directives also makes it easy to add a default row that is shown in empty tables to make
 it explicit that the table is intentionally empty and not just broken.
 
+Installation
+------------
+
+    bower install angular-tablesort
+
+or
+
+    npm install angular-tablesort
+
+
 Usage
 -----
 
