@@ -88,10 +88,10 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                         aval = filterFun( aval );
                         bval = filterFun( bval );
                     }
-                    if( aval === undefined ) {
+                    if( aval === undefined || aval === null ) {
                         aval = "";
                     }
-                    if( bval === undefined ) {
+                    if( bval === undefined || bval === null ) {
                        bval = "";
                     }
                     descending = $scope.sortExpression[i][2];
@@ -108,10 +108,10 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                 if( $scope.trackBy ) {
                     aval = a[$scope.trackBy];
                     bval = b[$scope.trackBy];
-                    if( aval === undefined ) {
+                    if( aval === undefined || aval === null ) {
                         aval = "";
                     }
-                    if( bval === undefined ) {
+                    if( bval === undefined || bval === null ) {
                         bval = "";
                     }
                     if( aval > bval ) {
