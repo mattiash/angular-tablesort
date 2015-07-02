@@ -7,18 +7,6 @@ th.tablesort-sortable {
     cursor: pointer;
 }
 
-table .tablesort-sortable:after{
-    content:"";
-    float:right;
-    margin-top:7px;
-    visibility:hidden;
-    border-left:4px solid transparent;
-    border-right:4px solid transparent;
-
-    border-top:none;
-    border-bottom:4px solid #000;
-}
-
 table .tablesort-desc:after{
     border-top:4px solid #000;
     border-bottom:none;
