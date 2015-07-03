@@ -7,6 +7,19 @@ th.tablesort-sortable {
     cursor: pointer;
 }
 
+
+table .tablesort-asc {
+   background: url("/images/arrow-down.png") right center no-repeat;
+   background-size: 15px 15px;
+   padding-right: 20px;
+}
+
+table .tablesort-desc{
+   background: url("/images/arrow-up.png") right center no-repeat;
+   background-size: 15px 15px;
+   padding-right: 20px;
+}
+
 table .tablesort-desc:after{
     border-top:4px solid #000;
     border-bottom:none;
