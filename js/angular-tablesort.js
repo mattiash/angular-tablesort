@@ -111,7 +111,7 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                     if( aval === undefined || aval === null ) {
                         aval = "";
                     }
-                    if( bval === undefined || bval === null ) {
+                    if( bval === undefined || bval === null ) {
                         bval = "";
                     }
                     if( aval > bval ) {
@@ -157,16 +157,22 @@ tableSortModule.directive('tsCriteria', function() {
 tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     return {
         terminal: true,
+        multiElement: true,
         require: "^tsWrapper",
         priority: 1000000,
         link: function(scope, element, attrs, tsWrapperCtrl) {
-            var clone = element.clone();
-            var tdcount = element[0].childElementCount;
-            var ngRepeatDirective = "ng-repeat";
-            if( typeof(clone.attr(ngRepeatDirective)) === "undefined" ) {
-                ngRepeatDirective = "data-ng-repeat";
+            var repeatAttrs = ["ng-repeat", "data-ng-repeat", "ng-repeat-start", "data-ng-repeat-start"];
+            var ngRepeatDirective = repeatAttrs[0];
+            var tsRepeatDirective = "ts-repeat";
+            for (i = 0; i < repeatAttrs.length; i++) {
+                 if (angular.isDefined(element.attr(repeatAttrs[i]))) {
+                    ngRepeatDirective = repeatAttrs[i];
+                    tsRepeatDirective = ngRepeatDirective.replace(/^ng/, 'ts');
+                    break;
+                }
             }
-            var repeatExpr = clone.attr(ngRepeatDirective);
+
+            var repeatExpr = element.attr(ngRepeatDirective);
             var trackBy = null;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
             if( trackByMatch ) {
@@ -181,21 +187,17 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                     "$1 in $2 | tablesortOrderBy:sortFun$3");
             }
 
+            var noDataRow = angular.element(element[0]).clone();
+            noDataRow.removeAttr(ngRepeatDirective);
+            noDataRow.removeAttr(tsRepeatDirective);
+            noDataRow.addClass("showIfLast");
+            noDataRow.children().remove();
+            noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
+            noDataRow = $compile(noDataRow)(scope);
+            element.parent().prepend(noDataRow);
 
-
-            while (element[0].firstChild) {
-              element[0].removeChild(element[0].firstChild);
-            }
-            var td = document.createElement("td");
-            td.colSpan=tdcount;
-            element[0].appendChild(td);
-
-            element[0].className += " showIfLast";
-            clone.removeAttr("ts-repeat");
-
-            clone.attr(ngRepeatDirective, repeatExpr);
-            var clonedElement = $compile(clone)(scope);
-            element.after(clonedElement);
+            angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
+            $compile(element, null, 1000000)(scope);
         }
     };
 }]);
