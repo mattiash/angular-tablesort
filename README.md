@@ -30,6 +30,12 @@ or
 Usage
 -----
 
+Include the module in your app
+
+```js
+angular.module('myApp', ['tableSort']);
+```
+
 The following code generates a table that can be sorted by clicking on the table headings:
 
 ```html
