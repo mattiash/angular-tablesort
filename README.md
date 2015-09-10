@@ -30,6 +30,12 @@ or
 Usage
 -----
 
+Include the script in your markup
+
+```html
+<script src="bower_components/angular-tablesort/js/angular-tablesort.js"></script>
+```
+
 Include the module in your app
 
 ```js
