@@ -7,5 +7,6 @@
     "url": "https://github.com/mattiash/angular-tablesort.git"
   },
   "license": "MIT",
-  "homepage": "https://github.com/mattiash/angular-tablesort"
+  "homepage": "https://github.com/mattiash/angular-tablesort",
+  "ignore": []
 }
