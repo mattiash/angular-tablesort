@@ -95,5 +95,9 @@ CSS
 
 All table headings that can be sorted on is styled with css-class `tablesort-sortable`. The table headings that the table is currently sorted on is styled with `tablesort-asc` or `tablesort-desc` classes depending on the sort-direction. A stylesheet is included to show that it works, but you probably want to build your own.
 
-The content and look of the default data for empty tables is controlled via css. It is inserted as one empty `<td>` spanning
-all columns and placed inside a `<tr>` with class `showIfLast` The `<tr>` is placed at the top of each table.
+By default the content and look of the data for empty tables is controlled via css. It is inserted as one empty `<td>` spanning
+all columns and placed inside a `<tr>` with class `showIfLast` The `<tr>` is placed at the top of each table. 
+To disable this feature add the attribute `ts-hide-no-data` to the `ts-repeat` row:
+```html
+  <tr ng-repeat="item in items" ts-repeat ts-hide-no-data>
+```

@@ -167,7 +167,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             for (i = 0; i < repeatAttrs.length; i++) {
                  if (angular.isDefined(element.attr(repeatAttrs[i]))) {
                     ngRepeatDirective = repeatAttrs[i];
-                    tsRepeatDirective = ngRepeatDirective.replace(/^ng/, 'ts');
+                    tsRepeatDirective = ngRepeatDirective.replace(/^(data-)?ng/, '$1ts');
                     break;
                 }
             }
@@ -187,14 +187,16 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                     "$1 in $2 | tablesortOrderBy:sortFun$3");
             }
 
-            var noDataRow = angular.element(element[0]).clone();
-            noDataRow.removeAttr(ngRepeatDirective);
-            noDataRow.removeAttr(tsRepeatDirective);
-            noDataRow.addClass("showIfLast");
-            noDataRow.children().remove();
-            noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
-            noDataRow = $compile(noDataRow)(scope);
-            element.parent().prepend(noDataRow);
+            if (angular.isUndefined(attrs.tsHideNoData)) {
+                var noDataRow = angular.element(element[0]).clone();
+                noDataRow.removeAttr(ngRepeatDirective);
+                noDataRow.removeAttr(tsRepeatDirective);
+                noDataRow.addClass("showIfLast");
+                noDataRow.children().remove();
+                noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
+                noDataRow = $compile(noDataRow)(scope);
+                element.parent().prepend(noDataRow);
+            }
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
             $compile(element, null, 1000000)(scope);
