@@ -54,25 +54,25 @@
 
         <h1>Angular Tablesort with Multi-Element ts-repeat-start &amp; ts-repeat-end</h1>
         <h2><em>Click Select to reveal item details.</em></h2>
-        <table border="1" ts-wrapper>
+        <table border="1" data-ts-wrapper>
             <thead>
             <tr>
                 <th>Select</th>
-                <th ts-criteria="Id">Id</th>
-                <th ts-criteria="Name|lowercase" ts-default>Name</th>
-                <th ts-criteria="Price|parseFloat">Price</th>
-                <th ts-criteria="Quantity|parseInt">Quantity</th>
+                <th data-ts-criteria="Id">Id</th>
+                <th data-ts-criteria="Name|lowercase" data-ts-default>Name</th>
+                <th data-ts-criteria="Price|parseFloat">Price</th>
+                <th data-ts-criteria="Quantity|parseInt">Quantity</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat-start="item in items track by item.Id" ts-repeat-start>
-                <td><input type="checkbox" ng-model="item.selected"></td>
+            <tr data-ng-repeat-start="item in items track by item.Id" data-ts-repeat-start>
+                <td><input type="checkbox" data-ng-model="item.selected"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>
                 <td>{{item.Price | currency}}</td>
                 <td>{{item.Quantity}}</td>
             </tr>
-            <tr ng-repeat-end ts-repeat-end ng-show="item.selected">
+            <tr data-ng-repeat-end data-ts-repeat-end data-ng-show="item.selected">
                 <td colspan="5">{{item.Description}}</td>
             </tr>
             </tbody>
@@ -93,6 +93,28 @@
             </thead>
             <tbody>
             <tr ng-repeat="item in noitems" ts-repeat ng-click="clickRow()">
+                <td><input type="checkbox"></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h1>Empty table without "No data" row</h1>
+        <table border="1" ts-wrapper>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th ts-criteria="Id">Id</th>
+                <th ts-criteria="Name|lowercase" ts-default>Name</th>
+                <th ts-criteria="Price|parseFloat">Price</th>
+                <th ts-criteria="Quantity|parseInt">Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in noitems" ts-repeat ts-hide-no-data ng-click="clickRow()">
                 <td><input type="checkbox"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>
