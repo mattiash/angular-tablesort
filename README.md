@@ -73,6 +73,22 @@ To sort in descending order, set ts-default to "descending"
 
 The `ts-repeat` attribute must be set on the element with ng-repeat.
 
+```html
+    <tr ng-repeat="item in items" ts-repeat>
+```
+
+Alternatively, `ts-repeat-start` and `ts-repeat-end` may be used to compliment the `ng-repeat-start` and `ng-repeat-end` directives.
+
+```html
+<tr ng-repeat-start="item in items track by item.Id" ts-repeat-start>
+  <td><input type="checkbox" ng-model="item.selected"></td>
+  <td>{{ item.Name }}</td>
+</tr>
+<tr ng-repeat-end data-ts-repeat-end ng-show="item.selected">
+  <td colspan="2">{{ item.Description }}</td>
+</tr>
+```
+
 By default, the sorting will be done as the last operation in the ng-repeat expression. To override this behavior, use an explicit `tablesort` directive as part of your ng-repeat expression. E.g.
 
 ```html
