@@ -35,7 +35,7 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                     }
                 }
                 else {
-                    for( i=0; i<$scope.headings.length; i=i+1 ) {
+                    for(var i=0; i<$scope.headings.length; i=i+1 ) {
                         $scope.headings[i]
                             .removeClass( "tablesort-desc" )
                             .removeClass( "tablesort-asc" );
@@ -49,7 +49,7 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                 var i;
                 var toggle_order = false;
                 var expr = parse_sortexpr( sortexpr );
-                for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
+                for(var i=0; i<$scope.sortExpression.length; i=i+1 ) {
                     if( $scope.sortExpression[i][0] === expr[0] ) {
                         if( $scope.sortExpression[i][2] ) {
                             element.removeClass( "tablesort-desc" );
@@ -80,7 +80,7 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun;
-                for( i=0; i<$scope.sortExpression.length; i=i+1 ){
+                for(var i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
                     filterFun = b[$scope.sortExpression[i][1]];
@@ -164,7 +164,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             var repeatAttrs = ["ng-repeat", "data-ng-repeat", "ng-repeat-start", "data-ng-repeat-start"];
             var ngRepeatDirective = repeatAttrs[0];
             var tsRepeatDirective = "ts-repeat";
-            for (i = 0; i < repeatAttrs.length; i++) {
+            for (var i = 0; i < repeatAttrs.length; i++) {
                  if (angular.isDefined(element.attr(repeatAttrs[i]))) {
                     ngRepeatDirective = repeatAttrs[i];
                     tsRepeatDirective = ngRepeatDirective.replace(/^(data-)?ng/, '$1ts');
