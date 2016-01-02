@@ -164,7 +164,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             var repeatAttrs = ["ng-repeat", "data-ng-repeat", "ng-repeat-start", "data-ng-repeat-start"];
             var ngRepeatDirective = repeatAttrs[0];
             var tsRepeatDirective = "ts-repeat";
-            for (i = 0; i < repeatAttrs.length; i++) {
+            for (var i = 0; i < repeatAttrs.length; i++) {
                  if (angular.isDefined(element.attr(repeatAttrs[i]))) {
                     ngRepeatDirective = repeatAttrs[i];
                     tsRepeatDirective = ngRepeatDirective.replace(/^(data-)?ng/, '$1ts');
