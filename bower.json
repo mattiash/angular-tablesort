@@ -1,7 +1,7 @@
 {
   "name": "angular-tablesort",
   "description": "Sort AngularJS tables easily",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": ["./js/angular-tablesort.js"],
   "dependencies": {
     "angular": "*"
