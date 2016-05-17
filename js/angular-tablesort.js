@@ -1,5 +1,5 @@
 /*
- angular-tablesort v1.1.2
+ angular-tablesort v1.1.2 - MODIFIED
  (c) 2013-2015 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
  License: MIT
 */
@@ -14,13 +14,13 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
             $scope.sortExpression = [];
             $scope.headings = [];
 
-            var parse_sortexpr = function( expr ) {
-                return [$parse( expr ), null, false];
+            var parse_sortexpr = function( expr, name ) {
+                return [$parse( expr ), null, false, name ? name : expr];
             };
 
-            this.setSortField = function( sortexpr, element ) {
+            this.setSortField = function( sortexpr, element, name ) {
                 var i;
-                var expr = parse_sortexpr( sortexpr );
+                var expr = parse_sortexpr( sortexpr, name );
                 if( $scope.sortExpression.length === 1
                     && $scope.sortExpression[0][0] === expr[0] ) {
                     if( $scope.sortExpression[0][2] ) {
@@ -42,13 +42,17 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                     }
                     element.addClass( "tablesort-asc" );
                     $scope.sortExpression = [expr];
+                    $scope.$emit('tablesort:sortOrder', [{
+                      name: expr[3],
+                      order: expr[2]
+                    }]);
                 }
             };
 
-            this.addSortField = function( sortexpr, element ) {
+            this.addSortField = function( sortexpr, element, name ) {
                 var i;
                 var toggle_order = false;
-                var expr = parse_sortexpr( sortexpr );
+                var expr = parse_sortexpr( sortexpr, name );
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
                     if( $scope.sortExpression[i][0] === expr[0] ) {
                         if( $scope.sortExpression[i][2] ) {
@@ -68,6 +72,14 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                     element.addClass( "tablesort-asc" );
                     $scope.sortExpression.push( expr );
                 }
+                
+                $scope.$emit('tablesort:sortOrder', $scope.sortExpression.map(function (a) {
+                  return {
+                    name: a[3],
+                    order: a[2]
+                  };
+                }));
+                
             };
 
             this.setTrackBy = function( trackBy ) {
@@ -134,19 +146,19 @@ tableSortModule.directive('tsCriteria', function() {
             var clickingCallback = function(event) {
                 scope.$apply( function() {
                     if( event.shiftKey ) {
-                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element);
+                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element, attrs.tsName);
                     }
                     else {
-                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element);
+                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName);
                     }
                 } );
             };
             element.bind('click', clickingCallback);
             element.addClass('tablesort-sortable');
             if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
-                tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
+                tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
                 if( attrs.tsDefault == "descending" ) {
-                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
+                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
                 }
             }
             tsWrapperCtrl.registerHeading( element );
