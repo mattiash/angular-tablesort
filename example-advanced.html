@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Angular Tablesort - Advanced</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="tablesort.css"/>
+</head>
+<body>
+
+<div ng-app="myApp" class="container" ng-cloak>
+    <div ng-controller="tableTestCtrl">
+        <h1>Angular Tablesort</h1>
+        <table class="table table-striped" ts-wrapper>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id">Id</th>
+                    <th ts-criteria="Name|lowercase" ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat">Price</th>
+                    <th ts-criteria="Quantity|parseInt">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in pagedItems | tablesort track by item.Id"
+                ng-class="{'active':item.Selected}"
+                ts-repeat>
+                <td><input type="checkbox" ng-model="item.Selected" /></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+        
+        <uib-pagination ng-model="pagination.currentPage"
+        ng-change="setPagedItems()"
+            total-items="items.length"
+            items-per-page="pagination.perPage"></uib-pagination>
+        
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
+<script src="js/angular-tablesort.js"></script>
+<script>
+    var myApp = angular.module( 'myApp', ['tableSort', 'ui.bootstrap'] )
+            .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
+                $scope.items = [];
+                for(var i = 0; i<26; i++){
+                    var idStr = (i < 10 ? "0" + i : i).toString();
+                    var nameStr = String.fromCharCode(65 + i); //gets alphabet chars
+                    var priceStr = (Math.random()*100).toFixed(2);
+                    var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
+                    $scope.items.push({
+                        Id: idStr,
+                        Name: nameStr,
+                        Price: priceStr,
+                        Quantity: qty,
+                        Description: "This is the description for item " + nameStr + ".",
+                        selected: false
+                    });
+                }
+                                
+                $scope.pagination={
+                    currentPage:1,
+                    perPage: 5,
+                    //perPageOptions:[5, 10, 25, 50, 100]
+                };
+                
+                $scope.pagedItems = undefined;
+                $scope.setPagedItems = function(){
+                    $scope.pagedItems = $scope.items.slice((($scope.pagination.currentPage-1)*$scope.pagination.perPage), (($scope.pagination.currentPage)*$scope.pagination.perPage))
+                };
+                $scope.setPagedItems(); //set initially
+                
+                // $scope.$on('tablesort:sortOrder', function(event, sortOrder){
+                //     //When sorting occurs
+                //     console.info("SORT", sortOrder)
+                //     $scope.setPagedItems();
+                // });
+                
+                $scope.$on('tablesort:beforeSort', function(event, sortOrder){
+                    //When sorting occurs
+                    console.info("BEFORESORT", sortOrder)
+                    $scope.setPagedItems();
+                });
+            }
+    );
+
+</script>
+</body>
+</html>

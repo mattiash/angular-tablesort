@@ -55,31 +55,34 @@
 
         <h1>Angular Tablesort with Multi-Element ts-repeat-start &amp; ts-repeat-end</h1>
         <h2><em>Click Select to reveal item details.</em></h2>
-        <table class="table table-striped" data-ts-wrapper>
+        <table class="table" ts-wrapper>
             <thead>
             <tr>
                 <th>Select</th>
-                <th data-ts-criteria="Id">Id</th>
-                <th data-ts-criteria="Name|lowercase" data-ts-default>Name</th>
-                <th data-ts-criteria="Price|parseFloat">Price</th>
-                <th data-ts-criteria="Quantity|parseInt">Quantity</th>
+                <th ts-criteria="Id">Id</th>
+                <th ts-criteria="Name|lowercase" ts-default>Name</th>
+                <th ts-criteria="Price|parseFloat">Price</th>
+                <th ts-criteria="Quantity|parseInt">Quantity</th>
             </tr>
             </thead>
             <tbody>
-            <tr data-ng-repeat-start="item in items track by item.Id" data-ts-repeat-start>
-                <td><input type="checkbox" data-ng-model="item.selected"></td>
+            <tr ng-repeat-start="item in items track by item.Id"
+                ts-repeat-start
+                ng-class="{'active' : item.selected}">
+                <td><input type="checkbox" ng-model="item.selected"></td>
                 <td>{{item.Id}}</td>
                 <td>{{item.Name}}</td>
                 <td>{{item.Price | currency}}</td>
                 <td>{{item.Quantity}}</td>
             </tr>
-            <tr data-ng-repeat-end data-ts-repeat-end data-ng-show="item.selected">
+            <tr ng-repeat-end
+                ts-repeat-end
+                ng-show="item.selected"
+                ng-class="{'active' : item.selected}">
                 <td colspan="5">{{item.Description}}</td>
             </tr>
             </tbody>
         </table>
-
-
 
         <h1>Empty table</h1>
         <table class="table table-striped" ts-wrapper>
@@ -124,7 +127,7 @@
             </tr>
             </tbody>
         </table>
-        <br />
+        
     </div>
 </div>
 
@@ -132,15 +135,23 @@
 <script src="js/angular-tablesort.js"></script>
 <script>
     var myApp = angular.module( 'myApp', ['tableSort'] )
-            .controller( "tableTestCtrl",     function tableTestCtrl($scope)  {
-                $scope.items = [
-                    {Id: "01", Name: "A", Price: "1.00", Quantity: "1", Description: "This is the description for item A.", selected: false},
-                    {Id: "02", Name: "B", Price: "10.00", Quantity: "1", Description: "This is the description for item B.", selected: false},
-                    {Id: "04", Name: "C", Price: "9.50", Quantity: "10", Description: "This is the description for item C.", selected: false},
-                    {Id: "03", Name: "a", Price: "9.00", Quantity: "2", Description: "This is the description for item a.", selected: false},
-                    {Id: "06", Name: "b", Price: "100.00", Quantity: "2", Description: "This is the description for item b.", selected: false},
-                    {Id: "05", Name: "c", Price: "1.20", Quantity: "2", Description: "This is the description for item c.", selected: false}
-                ];
+            .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
+                $scope.items = [];
+                for(var i = 0; i<10; i++){
+                    var idStr = (i < 10 ? "0" + i : i).toString();
+                    var nameStr = String.fromCharCode(65 + i); //gets alphabet chars
+                    var priceStr = (Math.random()*100).toFixed(2);
+                    var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
+                    $scope.items.push({
+                        Id: idStr,
+                        Name: nameStr,
+                        Price: priceStr,
+                        Quantity: qty,
+                        Description: "This is the description for item " + nameStr + ".",
+                        selected: false
+                    });
+                }
+                
                 $scope.noitems = [];
 
                 $scope.clickRow = function () {

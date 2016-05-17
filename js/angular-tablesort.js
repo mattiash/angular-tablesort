@@ -21,6 +21,10 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
             this.setSortField = function( sortexpr, element, name ) {
                 var i;
                 var expr = parse_sortexpr( sortexpr, name );
+                $scope.$emit('tablesort:beforeSort', [{
+                      name: expr[3],
+                      order: expr[2]
+                    }]);
                 if( $scope.sortExpression.length === 1
                     && $scope.sortExpression[0][0] === expr[0] ) {
                     if( $scope.sortExpression[0][2] ) {
@@ -33,6 +37,10 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                         element.addClass( "tablesort-desc" );
                         $scope.sortExpression[0][2] = true;
                     }
+                    $scope.$emit('tablesort:sortOrder', [{
+                      name: expr[3],
+                      order: expr[2]
+                    }]);
                 }
                 else {
                     for( i=0; i<$scope.headings.length; i=i+1 ) {
