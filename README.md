@@ -68,6 +68,8 @@ The `ts-wrapper` attribute must be set on element that surrounds both the headin
 
 The `ts-criteria` attribute tells tablesort which expression it should sort on when that element is clicked. Normally, the ts-criteria is the same as the expression that is shown in the column, but it doesn't have to be. The ts-criteria can also be filtered using the normal AngularJS filter syntax. Tablesort includes two filters parseInt and parseFloat that use the javascript functions of the same name, but any filter can be used.
 
+The `ts-name` attribute can be set to declare a unique name for an expression which will be used in the event fired when sorting has changed.
+
 The `ts-default` attribute can be set on one or more columns to sort on them in ascending order by default.
 To sort in descending order, set ts-default to "descending"
 
@@ -105,6 +107,22 @@ This will first sort the rows according to your specification and then only show
 
 If the `ng-repeat` expression contains a `track by` statement (which is generally a good idea), that expression will
 be used to provide a [stable](http://en.wikipedia.org/wiki/Sorting_algorithm#Stability) sort result.
+
+
+Events
+------
+
+When changing sorting in the table, an event named `tablesort:sortOrder` will be emitted which contains an array of all current sorting definitions.
+These sorting definitions could be used to set up sorted data retrieval when using other directives that handle things like pagination or filtering.
+
+```js
+$scope.$on('tablesort:sortOrder', (event, sortOrder) => {
+  self.sortOrder = sortOrder.map(o => {
+   return `${o.name} ${o.order ? 'ASC' : 'DESC'}`;
+  });
+});
+```
+
 
 CSS
 ---
