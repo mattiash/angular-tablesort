@@ -43,9 +43,11 @@
     var myApp = angular.module( 'myApp', ['tableSort', 'ui.bootstrap'] )
             .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
                 $scope.items = [];
-                for(var i = 0; i<26; i++){
+                var total = 50;
+                var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                for(var i = 0; i<total; i++){
                     var idStr = (i < 10 ? "0" + i : i).toString();
-                    var nameStr = String.fromCharCode(65 + i); //gets alphabet chars
+                    var nameStr = charset.charAt(Math.floor(Math.random() * charset.length)) + charset.charAt(Math.floor(Math.random() * charset.length))
                     var priceStr = (Math.random()*100).toFixed(2);
                     var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
                     $scope.items.push({
@@ -53,7 +55,6 @@
                         Name: nameStr,
                         Price: priceStr,
                         Quantity: qty,
-                        Description: "This is the description for item " + nameStr + ".",
                         selected: false
                     });
                 }
