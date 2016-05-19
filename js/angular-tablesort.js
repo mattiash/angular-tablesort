@@ -7,7 +7,6 @@
 //TODO: Make paging optional
 //TODO: Hide pager when only a single page of data - make this optional
 //TODO: Add optional filtering
-//TODO: The "Showing x of y items" text
 //TODO: Add templates & configs for paging & filtering (filtering could be text, dropdown, etc...)
 //TODO: Submit PR
 
@@ -171,12 +170,18 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
            };
+           
+           $scope.getPageRangeString = function(total){
+               return (($scope.pagination.currentPage-1) * $scope.pagination.perPage)+1 +"-"+ Math.min((($scope.pagination.currentPage) * $scope.pagination.perPage), total);
+           };
         }],
         link: function($scope, $element){
             var pagerString = "<div class='pull-right'>"
+            pagerString += "  <small class='text-muted'>Showing {{getPageRangeString("+$scope.itemsArrayExpression+".length)}} of {{"+$scope.itemsArrayExpression+".length}} items</small>"
+            pagerString += "  &nbsp;"
             pagerString += "  <uib-pagination style='vertical-align:middle;' ng-if='pagination.perPage < "+$scope.itemsArrayExpression+".length' ng-model='pagination.currentPage' total-items='"+$scope.itemsArrayExpression+".length' items-per-page='pagination.perPage'></uib-pagination>";
             pagerString += "  &nbsp;"
-            pagerString += "  <select class='form-control' style='width:auto; display:inline-block;' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select>"
+            pagerString += "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select></div>"
             pagerString += "</div>";
             pagerString += "<div class='clearfix'></div>";
             var $pager = $compile(pagerString)($scope);
