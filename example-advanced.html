@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in pagedItems | tablesort track by item.Id"
+            <tr ng-repeat="item in items | tablesort | filter:pageFilter track by item.Id"
                 ng-class="{'active':item.Selected}"
                 ts-repeat>
                 <td><input type="checkbox" ng-model="item.Selected" /></td>
@@ -33,8 +33,8 @@
             </tbody>
         </table>
         
-        <uib-pagination ng-model="pagination.currentPage"
-        ng-change="setPagedItems()"
+        <uib-pagination
+            ng-model="pagination.currentPage"
             total-items="items.length"
             items-per-page="pagination.perPage"></uib-pagination>
         
@@ -66,26 +66,15 @@
                 $scope.pagination={
                     currentPage:1,
                     perPage: 5,
-                    //perPageOptions:[5, 10, 25, 50, 100]
+                    perPageOptions:[5, 10, 25, 50, 100]
                 };
                 
-                $scope.pagedItems = undefined;
-                $scope.setPagedItems = function(){
-                    $scope.pagedItems = $scope.items.slice((($scope.pagination.currentPage-1)*$scope.pagination.perPage), (($scope.pagination.currentPage)*$scope.pagination.perPage))
+                $scope.pageFilter = function(item, index){
+                    //Only return the items that are in the correct index range for the currently selected page
+                    var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
+                    var end = ($scope.pagination.currentPage) * $scope.pagination.perPage;
+                    return index >= begin && index < end;
                 };
-                $scope.setPagedItems(); //set initially
-                
-                // $scope.$on('tablesort:sortOrder', function(event, sortOrder){
-                //     //When sorting occurs
-                //     console.info("SORT", sortOrder)
-                //     $scope.setPagedItems();
-                // });
-                
-                $scope.$on('tablesort:beforeSort', function(event, sortOrder){
-                    //When sorting occurs
-                    console.info("BEFORESORT", sortOrder)
-                    $scope.setPagedItems();
-                });
             }
     );
 
