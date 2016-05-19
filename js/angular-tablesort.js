@@ -21,10 +21,6 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
             this.setSortField = function( sortexpr, element, name ) {
                 var i;
                 var expr = parse_sortexpr( sortexpr, name );
-                $scope.$emit('tablesort:beforeSort', [{
-                      name: expr[3],
-                      order: expr[2]
-                    }]);
                 if( $scope.sortExpression.length === 1
                     && $scope.sortExpression[0][0] === expr[0] ) {
                     if( $scope.sortExpression[0][2] ) {
@@ -38,8 +34,8 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                         $scope.sortExpression[0][2] = true;
                     }
                     $scope.$emit('tablesort:sortOrder', [{
-                      name: expr[3],
-                      order: expr[2]
+                      name: $scope.sortExpression[0][3],
+                      order: $scope.sortExpression[0][2]
                     }]);
                 }
                 else {
@@ -80,14 +76,14 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                     element.addClass( "tablesort-asc" );
                     $scope.sortExpression.push( expr );
                 }
-                
+
                 $scope.$emit('tablesort:sortOrder', $scope.sortExpression.map(function (a) {
                   return {
                     name: a[3],
                     order: a[2]
                   };
                 }));
-                
+
             };
 
             this.setTrackBy = function( trackBy ) {
