@@ -4,9 +4,16 @@
  License: MIT
 */
 
+//TODO: Make paging optional
+//TODO: Hide pager when only a single page of data - make this optional
+//TODO: Add optional filtering
+//TODO: The "Showing x of y items" text
+//TODO: Add templates & configs for paging & filtering (filtering could be text, dropdown, etc...)
+//TODO: Submit PR
+
 var tableSortModule = angular.module( 'tableSort', [] );
 
-tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse ) {
+tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, $compile ) {
     'use strict';
     return {
         scope: true,
@@ -93,6 +100,18 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
             this.registerHeading = function( headingelement ) {
                 $scope.headings.push( headingelement );
             };
+            
+            this.setDataForPager = function(dataArrayExp){
+                $scope.itemsArrayExpression = dataArrayExp;
+            }
+            
+            $scope.itemsArrayExpression = "";
+            
+            $scope.pagination={
+                 currentPage:1,
+                 perPage: 5,
+                 perPageOptions:[5, 10, 25, 50, 100]
+            };
 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun;
@@ -139,7 +158,30 @@ tableSortModule.directive('tsWrapper', ['$log', '$parse', function( $log, $parse
                 }
                 return 0;
             };
-        }]
+            
+            $scope.pageLimitFun = function(array){
+                //Only return the items that are in the correct index range for the currently selected page
+                var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
+                var end = ($scope.pagination.currentPage) * $scope.pagination.perPage;
+                var final=[];
+                for(var i=0; i < array.length; i++){
+                    if(i >= begin && i < end){
+                        final.push(array[i]);
+                    }
+                }
+                return final;
+           };
+        }],
+        link: function($scope, $element){
+            var pagerString = "<div class='pull-right'>"
+            pagerString += "  <uib-pagination style='vertical-align:middle;' ng-if='pagination.perPage < "+$scope.itemsArrayExpression+".length' ng-model='pagination.currentPage' total-items='"+$scope.itemsArrayExpression+".length' items-per-page='pagination.perPage'></uib-pagination>";
+            pagerString += "  &nbsp;"
+            pagerString += "  <select class='form-control' style='width:auto; display:inline-block;' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select>"
+            pagerString += "</div>";
+            pagerString += "<div class='clearfix'></div>";
+            var $pager = $compile(pagerString)($scope);
+            $element.after($pager);
+        }
     };
 }]);
 
@@ -190,19 +232,20 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
 
             var repeatExpr = element.attr(ngRepeatDirective);
             var trackBy = null;
+            var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
+            var repeatInMatch = repeatExpr.match(repeatExprRegex);
             if( trackByMatch ) {
                 trackBy = trackByMatch[1];
                 tsWrapperCtrl.setTrackBy(trackBy);
             }
 
             if (repeatExpr.search(/tablesort/) != -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun");
+                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortPageLimit:pageLimitFun");
             } else {
-                repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
-                    "$1 in $2 | tablesortOrderBy:sortFun$3");
+                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortPageLimit:pageLimitFun$3");
             }
-
+            
             if (angular.isUndefined(attrs.tsHideNoData)) {
                 var noDataRow = angular.element(element[0]).clone();
                 noDataRow.removeAttr(ngRepeatDirective);
@@ -213,12 +256,22 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 noDataRow = $compile(noDataRow)(scope);
                 element.parent().prepend(noDataRow);
             }
+            
+            //pass the `itemsList` from `item in itemsList` to the master directive
+            tsWrapperCtrl.setDataForPager(repeatInMatch[2])
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
             $compile(element, null, 1000000)(scope);
         }
     };
 }]);
+
+tableSortModule.filter( 'tablesortPageLimit', function(){
+    return function(array, pageLimitFun) {
+       if(!array) return;
+       return pageLimitFun(array);
+    };
+} );
 
 tableSortModule.filter( 'tablesortOrderBy', function(){
     return function(array, sortfun ) {

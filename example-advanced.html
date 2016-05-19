@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in items | tablesort | filter:pageFilter track by item.Id"
+            <tr ng-repeat="item in items track by item.Id"
                 ng-class="{'active':item.Selected}"
                 ts-repeat>
                 <td><input type="checkbox" ng-model="item.Selected" /></td>
@@ -32,11 +32,6 @@
             </tr>
             </tbody>
         </table>
-        
-        <uib-pagination
-            ng-model="pagination.currentPage"
-            total-items="items.length"
-            items-per-page="pagination.perPage"></uib-pagination>
         
     </div>
 </div>
@@ -62,21 +57,8 @@
                         selected: false
                     });
                 }
-                                
-                $scope.pagination={
-                    currentPage:1,
-                    perPage: 5,
-                    perPageOptions:[5, 10, 25, 50, 100]
-                };
                 
-                $scope.pageFilter = function(item, index){
-                    //Only return the items that are in the correct index range for the currently selected page
-                    var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
-                    var end = ($scope.pagination.currentPage) * $scope.pagination.perPage;
-                    return index >= begin && index < end;
-                };
-            }
-    );
+            });
 
 </script>
 </body>
