@@ -237,7 +237,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             //Add pagination HTML after the table
             if($scope.paginationTemplate !== ""){
                 console.info($scope.paginationTemplate)
-                var pagerString = $scope.paginationTemplate.replace(/TOTAL_COUNT/g, '"+$scope.itemsArrayExpression+".length')
+                //Replace some strings with the proper expressions to be compiled
+                var pagerString = $scope.paginationTemplate
+                    .replace(/CURRENT_PAGE_RANGE/g,"getPageRangeString(TOTAL_COUNT)")
+                    .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + ".length")
+                    .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
+                    .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
+                    .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
+                    .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage")
+                    
                 var $pager = $compile(pagerString)($scope);
                 $container.append($pager);
             }
