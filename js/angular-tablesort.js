@@ -12,11 +12,25 @@
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
+tableSortModule.provider('tableSortConfig', function () {
+
+    this.setPaginationTemplate = function (templateString) {
+        this.paginationTemplate = templateString;
+    };
+
+    this.$get = function () {
+        return this;
+    };
+
+});
+
 tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, $compile ) {
     'use strict';
     return {
         scope: true,
-        controller: ['$scope', function($scope) {
+        controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
+            $scope.paginationTemplate = "";
+            
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -221,16 +235,12 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             $container.prepend($filter);
             //==============================
             //Add pagination HTML after the table
-            var pagerString = "<div class='pull-right'>"
-            pagerString +=    "  <small class='text-muted'>Showing {{getPageRangeString("+$scope.itemsArrayExpression+".length)}} of <span ng-if='filtering.filteredCount === "+$scope.itemsArrayExpression+".length'>{{"+$scope.itemsArrayExpression+".length}} items</span><span ng-if='filtering.filteredCount !== "+$scope.itemsArrayExpression+".length'>{{filtering.filteredCount}} items (filtered from {{"+$scope.itemsArrayExpression+".length}})</span></small>"
-            pagerString +=    "  &nbsp;"
-            pagerString +=    "  <uib-pagination style='vertical-align:middle;' ng-if='pagination.perPage < "+$scope.itemsArrayExpression+".length' ng-model='pagination.currentPage' total-items='filtering.filteredCount' items-per-page='pagination.perPage' max-size='5' force-ellipses='true'></uib-pagination>";
-            pagerString +=    "  &nbsp;"
-            pagerString +=    "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select></div>"
-            pagerString +=    "</div>";
-            pagerString +=    "<div class='clearfix'></div>";
-            var $pager = $compile(pagerString)($scope);
-            $container.append($pager);
+            if($scope.paginationTemplate !== ""){
+                console.info($scope.paginationTemplate)
+                var pagerString = $scope.paginationTemplate.replace(/TOTAL_COUNT/g, '"+$scope.itemsArrayExpression+".length')
+                var $pager = $compile(pagerString)($scope);
+                $container.append($pager);
+            }
         }
     };
 }]);
