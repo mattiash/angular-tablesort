@@ -177,21 +177,34 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
            
            $scope.filtering={
                filterString:"",
-               filteredCount:0
+               filteredCount:0,
+               filterFields:[]
            };
            
            $scope.filterLimitFun = function(array){
-               var searchStr = $scope.filtering.filterString.trim();
-               if(searchStr === ""){
-                   //Return unfiltered when nothing is being searched
-                   $scope.filtering.filteredCount = array.length;
-                   return array;
-               }
-                var filteredArr =  array.filter(function(item){
-                    return item.Name.toLowerCase().indexOf(searchStr) > -1;
+                if($scope.filtering.filterString === ""){
+                    //Return unfiltered when nothing is being searched
+                    $scope.filtering.filteredCount = array.length;
+                    return array;
+                }
+                //run custom filter function here if passed in!
+                var filteredArr = array.filter(function(item){
+                    var shouldInclude = false;
+                    for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
+                        if(!shouldInclude){
+                            var str = $scope.filtering.filterFields[i][0](item).toString();
+                            shouldInclude = str.indexOf($scope.filtering.filterString) > -1;
+                        }
+                    }
+                    return shouldInclude;
                 });
                 $scope.filtering.filteredCount = filteredArr.length;
                 return filteredArr;
+            };
+            
+            this.addFilterField = function( sortexpr, element, name ) {
+                var expr = parse_sortexpr( sortexpr, name );
+                $scope.filtering.filterFields.push( expr )
             };
         }],
         link: function($scope, $element){
@@ -244,6 +257,9 @@ tableSortModule.directive('tsCriteria', function() {
                     tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
                 }
             }
+            if( "tsFilter" in attrs) {
+                tsWrapperCtrl.addFilterField( attrs.tsCriteria, element, attrs.tsName );
+            }
             tsWrapperCtrl.registerHeading( element );
         }
     };
@@ -278,9 +294,9 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
 
             if (repeatExpr.search(/tablesort/) != -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun as filteredItems");
+                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun");
             } else {
-                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun as filteredItems$3");
+                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun$3");
             }
             
             if (angular.isUndefined(attrs.tsHideNoData)) {
@@ -313,7 +329,7 @@ tableSortModule.filter( 'tablesortPageLimit', function(){
 tableSortModule.filter( 'tablesortFilterLimit', function(){
     return function(array, filterLimitFun) {
        if(!array) return;
-       return filterLimitFun(array);
+        return filterLimitFun( array );
     };
 } );
 
