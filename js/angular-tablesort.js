@@ -13,11 +13,8 @@
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.provider('tableSortConfig', function () {
-
-    this.setPaginationTemplate = function (templateString) {
-        this.paginationTemplate = templateString;
-    };
-
+    this.paginationTemplate = "";
+    
     this.$get = function () {
         return this;
     };
@@ -29,7 +26,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
-            $scope.paginationTemplate = "";
+            $scope.paginationTemplate =  tableSortConfig.paginationTemplate;
             
             $scope.sortExpression = [];
             $scope.headings = [];
@@ -236,7 +233,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             //==============================
             //Add pagination HTML after the table
             if($scope.paginationTemplate !== ""){
-                console.info($scope.paginationTemplate)
+                
                 //Replace some strings with the proper expressions to be compiled
                 var pagerString = $scope.paginationTemplate
                     .replace(/CURRENT_PAGE_RANGE/g,"getPageRangeString(TOTAL_COUNT)")
@@ -244,7 +241,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
                     .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
                     .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
-                    .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage")
+                    .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage");
                     
                 var $pager = $compile(pagerString)($scope);
                 $container.append($pager);

@@ -40,7 +40,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
-
     angular
         .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
@@ -75,16 +74,15 @@
                 pagerString +=       "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT}} items</span>";
                 pagerString +=       "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT}} items (filtered from {{TOTAL_COUNT}})</span>"
                 pagerString +=    "  </small>&nbsp;"
-                pagerString +=    "  <uib-pagination style='vertical-align:middle;' ng-if='PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
+                pagerString +=    "  <uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
                 pagerString +=    "  &nbsp;"
-                pagerString +=    "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
+                pagerString +=    "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
                 pagerString +=    "</div>";
                 pagerString +=    "<div class='clearfix'></div>";
 
-                tableSortConfigProvider.setPaginationTemplate(pagerString);
+                tableSortConfigProvider.paginationTemplate = pagerString;
             }
         ]);
-
 </script>
 </body>
 </html>
