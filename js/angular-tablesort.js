@@ -5,8 +5,8 @@
 */
 
 //TODO: Make paging optional
-//TODO: Hide pager when only a single page of data - make this optional
-//TODO: Add optional filtering
+//TODO: Paging options
+//TODO: Make filtering optional & customizable (only certain fields, different UI's, etc.)
 //TODO: Add templates & configs for paging & filtering (filtering could be text, dropdown, etc...)
 //TODO: Submit PR
 
@@ -104,11 +104,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.itemsArrayExpression = dataArrayExp;
             }
             
-            $scope.itemsArrayExpression = "";
+            $scope.itemsArrayExpression = ""; //this will contain the string expression for the array of items in the table
             
-            $scope.pagination={
+            $scope.pagination = {
                  currentPage:1,
-                 perPage: 5,
+                 perPage: 10,
                  perPageOptions:[5, 10, 25, 50, 100]
             };
 
@@ -169,23 +169,55 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                 }
                 return final;
-           };
+            };
            
            $scope.getPageRangeString = function(total){
                return (($scope.pagination.currentPage-1) * $scope.pagination.perPage)+1 +"-"+ Math.min((($scope.pagination.currentPage) * $scope.pagination.perPage), total);
            };
+           
+           $scope.filtering={
+               filterString:"",
+               filteredCount:0
+           };
+           
+           $scope.filterLimitFun = function(array){
+               var searchStr = $scope.filtering.filterString.trim();
+               if(searchStr === ""){
+                   //Return unfiltered when nothing is being searched
+                   $scope.filtering.filteredCount = array.length;
+                   return array;
+               }
+                var filteredArr =  array.filter(function(item){
+                    return item.Name.toLowerCase().indexOf(searchStr) > -1;
+                });
+                $scope.filtering.filteredCount = filteredArr.length;
+                return filteredArr;
+            };
         }],
         link: function($scope, $element){
+            //Wrap the table in a new element
+            $element.wrap("<div class='ts-container'></div>");
+            var $container = $element.parent();
+            //==============================
+            //Add filtering HTML before the table
+            var filterString = "<div class='pull-right'>"
+            filterString +=    "  <div class='form-group' style='display:inline-block;'><label class='control-label'>Filter Items</label><input type='search' class='form-control' ng-model='filtering.filterString'/></div>";
+            filterString +=    "</div>";
+            filterString +=    "<div class='clearfix'></div>";
+            var $filter = $compile(filterString)($scope);
+            $container.prepend($filter);
+            //==============================
+            //Add pagination HTML after the table
             var pagerString = "<div class='pull-right'>"
-            pagerString += "  <small class='text-muted'>Showing {{getPageRangeString("+$scope.itemsArrayExpression+".length)}} of {{"+$scope.itemsArrayExpression+".length}} items</small>"
-            pagerString += "  &nbsp;"
-            pagerString += "  <uib-pagination style='vertical-align:middle;' ng-if='pagination.perPage < "+$scope.itemsArrayExpression+".length' ng-model='pagination.currentPage' total-items='"+$scope.itemsArrayExpression+".length' items-per-page='pagination.perPage'></uib-pagination>";
-            pagerString += "  &nbsp;"
-            pagerString += "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select></div>"
-            pagerString += "</div>";
-            pagerString += "<div class='clearfix'></div>";
+            pagerString +=    "  <small class='text-muted'>Showing {{getPageRangeString("+$scope.itemsArrayExpression+".length)}} of <span ng-if='filtering.filteredCount === "+$scope.itemsArrayExpression+".length'>{{"+$scope.itemsArrayExpression+".length}} items</span><span ng-if='filtering.filteredCount !== "+$scope.itemsArrayExpression+".length'>{{filtering.filteredCount}} items (filtered from {{"+$scope.itemsArrayExpression+".length}})</span></small>"
+            pagerString +=    "  &nbsp;"
+            pagerString +=    "  <uib-pagination style='vertical-align:middle;' ng-if='pagination.perPage < "+$scope.itemsArrayExpression+".length' ng-model='pagination.currentPage' total-items='filtering.filteredCount' items-per-page='pagination.perPage' max-size='5' force-ellipses='true'></uib-pagination>";
+            pagerString +=    "  &nbsp;"
+            pagerString +=    "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='pagination.perPage' ng-options='opt as (opt + \" per page\") for opt in pagination.perPageOptions'></select></div>"
+            pagerString +=    "</div>";
+            pagerString +=    "<div class='clearfix'></div>";
             var $pager = $compile(pagerString)($scope);
-            $element.after($pager);
+            $container.append($pager);
         }
     };
 }]);
@@ -246,9 +278,9 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
 
             if (repeatExpr.search(/tablesort/) != -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortPageLimit:pageLimitFun");
+                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun as filteredItems");
             } else {
-                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortPageLimit:pageLimitFun$3");
+                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun as filteredItems$3");
             }
             
             if (angular.isUndefined(attrs.tsHideNoData)) {
@@ -275,6 +307,13 @@ tableSortModule.filter( 'tablesortPageLimit', function(){
     return function(array, pageLimitFun) {
        if(!array) return;
        return pageLimitFun(array);
+    };
+} );
+
+tableSortModule.filter( 'tablesortFilterLimit', function(){
+    return function(array, filterLimitFun) {
+       if(!array) return;
+       return filterLimitFun(array);
     };
 } );
 
