@@ -70,8 +70,6 @@
         .module('myApp')
         .config(['tableSortConfigProvider', function(tableSortConfigProvider){
 
-                debugger;
-
                 var pagerString = "<div class='pull-right'>"
                 pagerString +=    "  <small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
                 pagerString +=       "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT}} items</span>";
