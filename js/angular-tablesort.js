@@ -45,7 +45,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 currentPage: 1,
                 getPageRangeString: function(total) {
                     //TODO: Format these numbers, perhaps optionally
-                   return (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1 + "-" + Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, total);
+                    var maxOnPage = total !== $scope.filtering.filteredCount ? $scope.filtering.filteredCount : total;
+                    return (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1 + "-" + Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, maxOnPage);
                 }
             };
 
@@ -151,6 +152,45 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
         }],
         link: function($scope, $element, $attrs){
             
+            //local attribute usages of the pagination/filtering options will override the global config
+            if($attrs.tsPerPageOptions){
+                $scope.pagination.perPageOptions = $scope.$eval($attrs.tsPerPageOptions);
+            }
+
+            if($attrs.tsPerPageDefault){
+                $scope.pagination.perPage = $scope.$eval($attrs.tsPerPageDefault);
+            }
+            
+            if($attrs.tsFilterFunction){
+                //if the table attributes has a filter function on it, this takes priority
+                $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
+            }
+
+            if(!angular.isFunction($scope.filtering.filterFunction)) {
+                //if no custom filter function was used in the config, use this as the default one
+                $scope.filtering.filterFunction = function(item){
+                    var shouldInclude = false;
+                    for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
+                        if(!shouldInclude){
+                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString(); //parse the item's property using the `ts-criteria` value & filter
+                            shouldInclude = str.indexOf($scope.filtering.filterString.toLowerCase()) > -1;
+                        }
+                    }
+                    return shouldInclude;
+                }
+            }
+
+            $scope.filterLimitFun = function(array){
+                if(!$attrs.tsFilterFunction && $scope.filtering.filterString === ""){
+                    //Return unfiltered when NOT using a custom filter function and when nothing is being searched
+                    $scope.filtering.filteredCount = array.length;
+                    return array;
+                }
+                var filteredArr = array.filter($scope.filtering.filterFunction);
+                $scope.filtering.filteredCount = filteredArr.length;
+                return filteredArr;
+            };
+
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
@@ -213,46 +253,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-            
-            if($attrs.tsFilterFunction){
-                //if the table attributes has a filter function on it, this takes priority
-                $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
-                
-            }
-            
-            if(!angular.isFunction($scope.filtering.filterFunction)) {
-                //if no custom filter function was used in the config, use this as the default one
-                $scope.filtering.filterFunction = function(item){
-                    var shouldInclude = false;
-                    for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
-                        if(!shouldInclude){
-                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString(); //parse the item's property using the `ts-criteria` value & filter
-                            shouldInclude = str.indexOf($scope.filtering.filterString.toLowerCase()) > -1;
-                        }
-                    }
-                    return shouldInclude;
-                }
-            }
-            
-            $scope.filterLimitFun = function(array){
-                if(!$attrs.tsFilterFunction && $scope.filtering.filterString === ""){
-                    //Return unfiltered when NOT using a custom filter function and when nothing is being searched
-                    $scope.filtering.filteredCount = array.length;
-                    return array;
-                }
-                var filteredArr = array.filter($scope.filtering.filterFunction);
-                $scope.filtering.filteredCount = filteredArr.length;
-                return filteredArr;
-            };
-            
-            //local attribute usages of the pagination/filtering options will override the global config
-            if($attrs.tsPerPageOptions){
-                $scope.pagination.perPageOptions = $scope.$eval($attrs.tsPerPageOptions);
-            }
-            if($attrs.tsPerPageDefault){
-                $scope.pagination.perPage = $scope.$eval($attrs.tsPerPageDefault);
-            }
-            
+
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== ""){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 var $filter = $compile(filterString)($scope);
@@ -260,7 +261,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $element.after($filter); //first we add the filter after the table
                 $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
             }
-            
+
             if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
                 var pagerString = replaceTemplateTokens($scope, $scope.pagination.template)
                 var $pager = $compile(pagerString)($scope);
