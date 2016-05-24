@@ -4,8 +4,6 @@
  License: MIT
 */
 
-//TODO: Make paging optional
-//TODO: Paging options
 //TODO: Make filtering customizable (only certain fields, different UI's, etc.)
 //TODO: Submit PR
 
@@ -14,6 +12,8 @@ var tableSortModule = angular.module( 'tableSort', [] );
 tableSortModule.provider('tableSortConfig', function () {
     this.filterTemplate = "";
     this.paginationTemplate = "";
+    this.perPageOptions = [10, 25, 50, 100];
+    this.perPageDefault = 10;
     
     this.$get = function () {
         return this;
@@ -28,7 +28,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
         //Replace some strings with the proper expressions to be compiled
         return templateString
             .replace(/FILTER_STRING/g,"filtering.filterString")
-            .replace(/CURRENT_PAGE_RANGE/g,"getPageRangeString(TOTAL_COUNT)")
+            .replace(/CURRENT_PAGE_RANGE/g,"pagination.getPageRangeString(TOTAL_COUNT)")
             .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + ".length")
             .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
             .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
@@ -39,9 +39,24 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
-            $scope.filterTemplate =  tableSortConfig.filterTemplate;
-            $scope.paginationTemplate =  tableSortConfig.paginationTemplate;
-            
+            $scope.pagination = {
+                template: tableSortConfig.paginationTemplate,
+                perPageOptions: tableSortConfig.perPageOptions,
+                perPage: tableSortConfig.perPageDefault,
+                currentPage: 1,
+                getPageRangeString: function(total) {
+                   return (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1 + "-" + Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, total);
+                }
+            };
+
+            $scope.filtering = {
+                template: tableSortConfig.filterTemplate,
+                filterString: "",
+                filteredCount: 0,
+                filterFields: []
+           };
+
+            $scope.itemsArrayExpression = ""; //this will contain the string expression for the array of items in the table
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -124,18 +139,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             this.registerHeading = function( headingelement ) {
                 $scope.headings.push( headingelement );
             };
-            
+
+            this.addFilterField = function( sortexpr, element, name ) {
+                var expr = parse_sortexpr( sortexpr, name );
+                $scope.filtering.filterFields.push( expr )
+            };
+
             this.setDataForPager = function(dataArrayExp){
                 $scope.itemsArrayExpression = dataArrayExp;
             }
-            
-            $scope.itemsArrayExpression = ""; //this will contain the string expression for the array of items in the table
-            
-            $scope.pagination = {
-                 currentPage:1,
-                 perPage: 10,
-                 perPageOptions:[5, 10, 25, 50, 100]
-            };
 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun;
@@ -182,7 +194,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return 0;
             };
-            
+
             $scope.pageLimitFun = function(array){
                 //Only return the items that are in the correct index range for the currently selected page
                 var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
@@ -195,18 +207,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-           
-           $scope.getPageRangeString = function(total){
-               return (($scope.pagination.currentPage-1) * $scope.pagination.perPage)+1 +"-"+ Math.min((($scope.pagination.currentPage) * $scope.pagination.perPage), total);
-           };
-           
-           $scope.filtering={
-               filterString:"",
-               filteredCount:0,
-               filterFields:[]
-           };
-           
-           $scope.filterLimitFun = function(array){
+
+            $scope.filterLimitFun = function(array){
                 if($scope.filtering.filterString === ""){
                     //Return unfiltered when nothing is being searched
                     $scope.filtering.filteredCount = array.length;
@@ -226,23 +228,21 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.filtering.filteredCount = filteredArr.length;
                 return filteredArr;
             };
-            
-            this.addFilterField = function( sortexpr, element, name ) {
-                var expr = parse_sortexpr( sortexpr, name );
-                $scope.filtering.filterFields.push( expr )
-            };
         }],
-        link: function($scope, $element){
-            if($scope.filterTemplate !== ""){
-                var filterString = replaceTemplateTokens($scope, $scope.filterTemplate);
+        link: function($scope, $element, $attrs){
+            
+            //local attribute usages of the pagination/filtering options wil override the global config
+            
+            if($scope.filtering.template !== ""){
+                var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 var $filter = $compile(filterString)($scope);
                 //Add filtering HTML BEFORE the table - since jqLite has no `.before()` or `.insertBefore()` we have to do a little shuffling...
                 $element.after($filter); //first we add the filter after the table
                 $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
             }
             
-            if($scope.paginationTemplate !== ""){
-                var pagerString = replaceTemplateTokens($scope, $scope.paginationTemplate)
+            if($scope.pagination.template !== ""){
+                var pagerString = replaceTemplateTokens($scope, $scope.pagination.template)
                 var $pager = $compile(pagerString)($scope);
                 //Add pagination HTML AFTER the table
                 $element.after($pager);

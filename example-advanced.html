@@ -9,7 +9,7 @@
 
 <div ng-app="myApp" class="container" ng-cloak>
     <div ng-controller="tableTestCtrl">
-        <h1>Angular Tablesort</h1>
+        <h1>Angular Tablesort <small>(With configured filtering & paging)</small></h1>
         <table class="table table-striped" ts-wrapper>
             <thead>
                 <tr>
@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in items track by item.Id"
+            <tr ng-repeat="item in tableOneItems track by item.Id"
                 ng-class="{'active':item.Selected}"
                 ts-repeat>
                 <td><input type="checkbox" ng-model="item.Selected" /></td>
@@ -40,22 +40,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
 <script src="js/angular-tablesort.js"></script>
 <script>
-    angular
-        .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
-        .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
-            //Generate some fake data
-            $scope.items = [];
-            var total = 10000;
+    function getFakeData(count){
+        var items = [];
             var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             function getRandLetter(){
                 return charset.charAt(Math.floor(Math.random() * charset.length));
             }
-            for(var i = 0; i<total; i++){
+        for(var i = 0; i < count; i++){
                 var idStr = (i < 10 ? "0" + i : i).toString();
                 var nameStr = getRandLetter() + getRandLetter() + getRandLetter();
                 var priceStr = (Math.random()*100).toFixed(2);
                 var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
-                $scope.items.push({
+            items.push({
                     Id: idStr,
                     Name: nameStr,
                     Price: priceStr,
@@ -63,11 +59,21 @@
                     selected: false
                 });
             }
+        return items;
+    }
+    
+    angular
+        .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
+        .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
+            //Generate some fake data
+            $scope.tableOneItems = getFakeData(10000);
         });
 
     angular
         .module('myApp')
         .config(['tableSortConfigProvider', function(tableSortConfigProvider){
+            //Globally configured filtering & pagination templates
+            
             /* Template Tokens - all are replaced by Angular expressions
              * TOTAL_COUNT         - The number for the total count of items in the table
              * FILTERED_COUNT      - The number for the total count of items in the table after the filter has been applied
@@ -80,8 +86,8 @@
             
             var pagerString = "<div class='pull-right'>"
             pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
-            pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT}} items</span>";
-            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT}} items (filtered from {{TOTAL_COUNT}})</span>"
+            pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} items</span>";
+            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} items (filtered from {{TOTAL_COUNT | number}})</span>"
             pagerString +=      "</small>&nbsp;"
             pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
             pagerString +=      "&nbsp;"
