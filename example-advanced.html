@@ -4,11 +4,12 @@
     <title>Angular Tablesort - Advanced</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="tablesort.css"/>
+    <style>.ng-cloak,[ng-cloak]{display:none;}</style>
 </head>
 <body>
 
 <div ng-app="myApp" class="container" ng-cloak>
-    <div ng-controller="tableTestCtrl">
+    <div ng-controller="tableTestCtrl" >
         
         <div class="alert alert-info">
             <h4><span class="glyphicon glyphicon-info-sign"></span> About Pagination</h4>
@@ -45,13 +46,13 @@
         
         <h2>Custom Filtering</small></h2>
         <div class="row">
-            <div class="col-md-3 col-md-offset-6">
+            <div class="col-xs-6 col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-6">
                 <div class="form-group">
                     <label for="cstm-filter-name" class="control-label">Name</label>
                     <input type="search" id="cstm-filter-name" class="form-control" ng-model="customNameFilter" />
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-xs-6 col-sm-4 col-md-3">
                 <div class="form-group">
                     <label for="cstm-filter-price" class="control-label">Price</label>
                     <select id="cstm-filter-price" class="form-control" ng-model="customPriceFilter">
@@ -219,7 +220,7 @@
             pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} items</span>";
             pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} items (filtered from {{TOTAL_COUNT | number}})</span>"
             pagerString +=      "</small>&nbsp;"
-            pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
+            pagerString +=      "<uib-pagination style='vertical-align:top; margin-top:0;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
             pagerString +=      "&nbsp;"
             pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
             pagerString +=    "</div>";

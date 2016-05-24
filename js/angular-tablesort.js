@@ -1,5 +1,5 @@
 /*
- angular-tablesort v1.1.2 - MODIFIED
+ angular-tablesort v1.1.2
  (c) 2013-2015 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
  License: MIT
 */
@@ -343,11 +343,12 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 trackBy = trackByMatch[1];
                 tsWrapperCtrl.setTrackBy(trackBy);
             }
-
+            
+            //Limit Sort the results, then limit them to only include what matches the filter, then only what's on the current page
             if (repeatExpr.search(/tablesort/) != -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun");
+                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun");
             } else {
-                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortFilterLimit:filterLimitFun | tablesortPageLimit:pageLimitFun$3");
+                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun$3");
             }
             
             if (angular.isUndefined(attrs.tsHideNoData)) {
@@ -361,7 +362,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 element.parent().prepend(noDataRow);
             }
             
-            //pass the `itemsList` from `item in itemsList` to the master directive
+            //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions 
             tsWrapperCtrl.setDataForPager(repeatInMatch[2])
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
@@ -370,17 +371,10 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     };
 }]);
 
-tableSortModule.filter( 'tablesortPageLimit', function(){
-    return function(array, pageLimitFun) {
+tableSortModule.filter( 'tablesortLimit', function(){
+    return function(array, limitFun) {
        if(!array) return;
-       return pageLimitFun(array);
-    };
-} );
-
-tableSortModule.filter( 'tablesortFilterLimit', function(){
-    return function(array, filterLimitFun) {
-       if(!array) return;
-        return filterLimitFun( array );
+       return limitFun(array);
     };
 } );
 
