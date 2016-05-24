@@ -37,6 +37,12 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
+            if(!isNaN(tableSortConfig.perPageDefault) && tableSortConfig.perPageOptions.indexOf(tableSortConfig.perPageDefault) === -1){
+                //If a default per-page option was added that isn't in the array, add it and sort the array 
+                tableSortConfig.perPageOptions.push(tableSortConfig.perPageDefault);
+                tableSortConfig.perPageOptions.sort(function (a,b) {return a - b;}); 
+            }
+
             $scope.pagination = {
                 template: tableSortConfig.paginationTemplate,
                 perPageOptions: tableSortConfig.perPageOptions,
@@ -158,7 +164,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             }
 
             if($attrs.tsPerPageDefault){
-                $scope.pagination.perPage = $scope.$eval($attrs.tsPerPageDefault);
+                var defaultPerPage = $scope.$eval($attrs.tsPerPageDefault);
+                if(!isNaN(defaultPerPage)){
+                    $scope.pagination.perPage = defaultPerPage
+                    if($scope.pagination.perPageOptions.indexOf($scope.pagination.perPage) === -1){
+                        //If a default per-page option was added that isn't in the array, add it and sort the array 
+                        $scope.pagination.perPageOptions.push($scope.pagination.perPage);
+                        $scope.pagination.perPageOptions.sort(function (a,b) {return a - b;}); 
+                    }
+                }
             }
             
             if($attrs.tsFilterFunction){
