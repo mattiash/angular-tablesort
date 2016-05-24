@@ -4,13 +4,11 @@
  License: MIT
 */
 
-//TODO: Make filtering customizable (only certain fields, different UI's, etc.)
-//TODO: Submit PR
-
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.provider('tableSortConfig', function () {
     this.filterTemplate = "";
+    this.filterFunction = null;
     this.paginationTemplate = "";
     this.perPageOptions = [10, 25, 50, 100];
     this.perPageDefault = 10;
@@ -54,6 +52,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             $scope.filtering = {
                 template: tableSortConfig.filterTemplate,
                 filterString: "",
+                filterFunction: tableSortConfig.filterFunction,
                 filteredCount: 0,
                 filterFields: []
            };
@@ -199,7 +198,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
 
             $scope.pageLimitFun = function(array){
-                if($attrs.tsPaginationEnabled === "false"){
+                if($attrs.tsDisplayPagination === "false"){
                     //pagination is disabled, so return everything
                     return array;
                 }
@@ -214,24 +213,34 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-
-            $scope.filterLimitFun = function(array){
-                if($scope.filtering.filterString === ""){
-                    //Return unfiltered when nothing is being searched
-                    $scope.filtering.filteredCount = array.length;
-                    return array;
-                }
-                //run custom filter function here if passed in!
-                var filteredArr = array.filter(function(item){
+            
+            if($attrs.tsFilterFunction){
+                //if the table attributes has a filter function on it, this takes priority
+                $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
+                
+            }
+            
+            if(!angular.isFunction($scope.filtering.filterFunction)) {
+                //if no custom filter function was used in the config, use this as the default one
+                $scope.filtering.filterFunction = function(item){
                     var shouldInclude = false;
                     for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
                         if(!shouldInclude){
-                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString();
-                            shouldInclude = str.indexOf($scope.filtering.filterString) > -1;
+                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString(); //parse the item's property using the `ts-criteria` value & filter
+                            shouldInclude = str.indexOf($scope.filtering.filterString.toLowerCase()) > -1;
                         }
                     }
                     return shouldInclude;
-                });
+                }
+            }
+            
+            $scope.filterLimitFun = function(array){
+                if(!$attrs.tsFilterFunction && $scope.filtering.filterString === ""){
+                    //Return unfiltered when NOT using a custom filter function and when nothing is being searched
+                    $scope.filtering.filteredCount = array.length;
+                    return array;
+                }
+                var filteredArr = array.filter($scope.filtering.filterFunction);
                 $scope.filtering.filteredCount = filteredArr.length;
                 return filteredArr;
             };
@@ -244,7 +253,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.pagination.perPage = $scope.$eval($attrs.tsPerPageDefault);
             }
             
-            if($attrs.tsFilteringEnabled !== "false" && $scope.filtering.template !== ""){
+            if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== ""){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 var $filter = $compile(filterString)($scope);
                 //Add filtering HTML BEFORE the table - since jqLite has no `.before()` or `.insertBefore()` we have to do a little shuffling...
@@ -252,7 +261,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
             }
             
-            if($attrs.tsPaginationEnabled !== "false" && $scope.pagination.template !== ""){
+            if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
                 var pagerString = replaceTemplateTokens($scope, $scope.pagination.template)
                 var $pager = $compile(pagerString)($scope);
                 //Add pagination HTML AFTER the table

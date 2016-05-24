@@ -15,6 +15,8 @@
             <p>This demo page has examples that use the <a href="http://angular-ui.github.io/bootstrap/#/pagination" class="alert-link" target="_blank">Angular-UI Bootstrap pagination directive</a>, but really any pagination directive could be used here</p>
         </div>
         
+        <hr />
+        
         <h2>With configured filtering & paging</small></h2>
         <table class="table table-striped" ts-wrapper>
             <thead>
@@ -27,48 +29,42 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in tableOneItems track by item.Id"
-                ng-class="{'active':item.Selected}"
-                ts-repeat>
-                <td><input type="checkbox" ng-model="item.Selected" /></td>
-                <td>{{item.Id}}</td>
-                <td>{{item.Name}}</td>
-                <td>{{item.Price | currency}}</td>
-                <td>{{item.Quantity}}</td>
-            </tr>
-            </tbody>
-        </table>
-        
-        <hr />
-        
-        <h2>Disabled filtering & paging</h2>
-        <table class="table table-striped" ts-wrapper ts-filtering-enabled="false" ts-pagination-enabled="false">
-            <thead>
-                <tr>
-                    <th>Select</th>
-                    <th ts-criteria="Id" ts-filter ts-default>Id</th>
-                    <th ts-criteria="Name|lowercase" ts-filter>Name</th>
-                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
-                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                <tr ng-repeat="item in tableOneItems track by item.Id"
+                    ng-class="{'active':item.Selected}"
+                    ts-repeat>
+                    <td><input type="checkbox" ng-model="item.Selected" /></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
                 </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="item in tableTwoItems track by item.Id"
-                ng-class="{'active':item.Selected}"
-                ts-repeat>
-                <td><input type="checkbox" ng-model="item.Selected" /></td>
-                <td>{{item.Id}}</td>
-                <td>{{item.Name}}</td>
-                <td>{{item.Price | currency}}</td>
-                <td>{{item.Quantity}}</td>
-            </tr>
             </tbody>
         </table>
-
+        
         <hr />
         
-        <h2>Disabled filtering & different per-page options</h2>
-        <table class="table table-striped" ts-wrapper ts-filtering-enabled="false" ts-per-page-options="[20,40,60]" ts-per-page-default="40">
+        <h2>Custom Filtering</small></h2>
+        <div class="row">
+            <div class="col-md-3 col-md-offset-6">
+                <div class="form-group">
+                    <label for="cstm-filter-name" class="control-label">Name</label>
+                    <input type="search" id="cstm-filter-name" class="form-control" ng-model="customNameFilter" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="cstm-filter-price" class="control-label">Price</label>
+                    <select id="cstm-filter-price" class="form-control" ng-model="customPriceFilter">
+                        <option value="">All</option>
+                        <option value="under20">Under $20</option>
+                        <option value="20to50">Between $20 and $50</option>
+                        <option value="over50">Over $50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-filter-function="customFilterFn">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -79,15 +75,67 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in tableThreeItems track by item.Id"
-                ng-class="{'active':item.Selected}"
-                ts-repeat>
-                <td><input type="checkbox" ng-model="item.Selected" /></td>
-                <td>{{item.Id}}</td>
-                <td>{{item.Name}}</td>
-                <td>{{item.Price | currency}}</td>
-                <td>{{item.Quantity}}</td>
-            </tr>
+                <tr ng-repeat="item in tableTwoItems track by item.Id"
+                    ng-class="{'active':item.Selected}"
+                    ts-repeat>
+                    <td><input type="checkbox" ng-model="item.Selected" /></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <hr />
+        
+        <h2>Disabled filtering & paging</h2>
+        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-display-pagination="false">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id" ts-filter ts-default>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in tableThreeItems track by item.Id"
+                    ng-class="{'active':item.Selected}"
+                    ts-repeat>
+                    <td><input type="checkbox" ng-model="item.Selected" /></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr />
+        
+        <h2>Disabled filtering & different per-page options</h2>
+        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-per-page-options="[20,40,60]" ts-per-page-default="40">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id" ts-filter>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in tableFourItems track by item.Id"
+                    ng-class="{'active':item.Selected}"
+                    ts-repeat>
+                    <td><input type="checkbox" ng-model="item.Selected" /></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
+                </tr>
             </tbody>
         </table>
         
@@ -125,8 +173,27 @@
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
             //Generate some fake data
             $scope.tableOneItems = getFakeData(10000);
-            $scope.tableTwoItems = getFakeData(12);
-            $scope.tableThreeItems = getFakeData(100);
+            $scope.tableTwoItems = getFakeData(100);
+            $scope.tableThreeItems = getFakeData(12);
+            $scope.tableFourItems = getFakeData(100);
+            
+            //Custom filter stuff (tableTwoItems)
+            $scope.customNameFilter = "";
+            $scope.customPriceFilter = "";
+            $scope.customFilterFn = function(item) {
+                var nameMatch = item.Name.toLowerCase().indexOf($scope.customNameFilter.toLowerCase()) > -1;
+                var priceMatch = true;
+                
+                if($scope.customPriceFilter==="under20"){
+                    priceMatch = item.Price < 20;
+                }else if($scope.customPriceFilter==="20to50"){
+                    priceMatch = item.Price >= 20 && item.Price <= 50;
+                } else if($scope.customPriceFilter==="over50"){
+                    priceMatch = item.Price > 50;
+                }
+                
+                return nameMatch && priceMatch;
+            };
         });
 
     angular
