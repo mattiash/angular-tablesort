@@ -12,6 +12,8 @@ tableSortModule.provider('tableSortConfig', function () {
     this.paginationTemplate = ""; //no pagination by default unless a template is provided
     this.perPageOptions = [10, 25, 50, 100];
     this.perPageDefault = this.perPageOptions[0]; //first option by default
+    this.itemNameSingular = "item";
+    this.itemNamePlural = this.itemNameSingular + "s";
     
     this.$get = function () {
         return this;
@@ -25,13 +27,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
     function replaceTemplateTokens($scope, templateString){
         //Replace some strings with the proper expressions to be compiled
         return templateString
-            .replace(/FILTER_STRING/g,"filtering.filterString")
-            .replace(/CURRENT_PAGE_RANGE/g,"pagination.getPageRangeString(TOTAL_COUNT)")
+            .replace(/FILTER_STRING/g, "filtering.filterString")
+            .replace(/CURRENT_PAGE_RANGE/g, "pagination.getPageRangeString(TOTAL_COUNT)")
             .replace(/TOTAL_COUNT/g, $scope.pagination.itemsArrayExpression + ".length")
             .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
             .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
-            .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
-            .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage");
+            .replace(/ITEM_NAME_SINGULAR/g, 'itemNameSingular')
+            .replace(/ITEM_NAME_PLURAL/g, 'itemNamePlural')
+            .replace(/FILTERED_COUNT/g, "filtering.filteredCount")
+            .replace(/CURRENT_PAGE_NUMBER/g, "pagination.currentPage");
     }
     
     return {
@@ -62,7 +66,10 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 filterFunction: tableSortConfig.filterFunction,
                 filteredCount: 0,
                 filterFields: []
-           };
+            };
+            
+            $scope.itemNameSingular = tableSortConfig.itemNameSingular;
+            $scope.itemNamePlural = tableSortConfig.itemNamePlural;
 
             $scope.sortExpression = [];
             $scope.headings = [];
@@ -157,6 +164,19 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             }
         }],
         link: function($scope, $element, $attrs){
+            
+            if($attrs.tsItemName){
+                //if the table attributes has an item name on it, this takes priority
+                $scope.itemNameSingular = $attrs.tsItemName;
+                
+                if($attrs.tsItemNamePlural){
+                    //if a plural name was specified, use that
+                    $scope.itemNamePlural = $attrs.tsItemNamePlural;
+                }else{
+                    //otherwise just add "s" to the singular name
+                    $scope.itemNamePlural = $attrs.tsItemName + "s";
+                }
+            }
             
             //local attribute usages of the pagination/filtering options will override the global config
             if($attrs.tsPerPageOptions){

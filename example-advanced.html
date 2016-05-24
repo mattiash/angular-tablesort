@@ -19,7 +19,7 @@
         <hr />
 
         <h2>With configured filtering & paging</small></h2>
-        <table class="table table-striped" ts-wrapper>
+        <table class="table table-striped" ts-wrapper ts-item-name="product">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -213,12 +213,22 @@
              * ITEMS_PER_PAGE      - The number for the selected number of items to display per page (the selected item from PER_PAGE_OPTIONS)
              * CURRENT_PAGE_NUMBER - The number for the page that is currently being viewed
              * CURRENT_PAGE_RANGE  - The number for the current viewable range of pages
+             * ITEM_NAME_SINGULAR  - The singular version of the name of the items being iterated over
+             * ITEM_NAME_PLURAL    - The plural version of the name of the items being iterated over
              */
+            
+            var filterString = "<div class='pull-right'>"
+            filterString +=      "<div class='form-group' style='display:inline-block;'>";
+            filterString +=        "<input type='search' class='form-control' placeholder='filter {{ITEM_NAME_PLURAL}}' ng-model='FILTER_STRING'/>";
+            filterString +=      "</div>";
+            filterString +=    "</div>";
+            filterString +=    "<div class='clearfix'></div>";
+            tableSortConfigProvider.filterTemplate = filterString;
             
             var pagerString = "<div class='pull-right'>"
             pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
-            pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} items</span>";
-            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} items (filtered from {{TOTAL_COUNT | number}})</span>"
+            pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
+            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} {{FILTERED_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}} (filtered from {{TOTAL_COUNT | number}})</span>"
             pagerString +=      "</small>&nbsp;"
             pagerString +=      "<uib-pagination style='vertical-align:top; margin-top:0;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
             pagerString +=      "&nbsp;"
@@ -226,14 +236,6 @@
             pagerString +=    "</div>";
             pagerString +=    "<div class='clearfix'></div>";
             tableSortConfigProvider.paginationTemplate = pagerString;
-            
-            var filterString = "<div class='pull-right'>"
-            filterString +=      "<div class='form-group' style='display:inline-block;'>";
-            filterString +=        "<input type='search' class='form-control' placeholder='filter items' ng-model='FILTER_STRING'/>";
-            filterString +=      "</div>";
-            filterString +=    "</div>";
-            filterString +=    "<div class='clearfix'></div>";
-            tableSortConfigProvider.filterTemplate = filterString;
         }
     ]);
 </script>

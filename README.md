@@ -155,6 +155,8 @@ There are a few tokens that are replaced with the proper Angular expressions.
 | `ITEMS_PER_PAGE`      | The number for the selected number of items to display per page (the selected item from `PER_PAGE_OPTIONS`) |
 | `CURRENT_PAGE_NUMBER` | The number for the page that is currently being viewed                                                      |
 | `CURRENT_PAGE_RANGE`  | The number for the current viewable range of pages                                                          |
+| `ITEM_NAME_SINGULAR`  | The singular version of the name of the items being iterated over                                           |
+| `ITEM_NAME_PLURAL`    | The plural version of the name of the items being iterated over                                             |
 
 
 Here is an example of one way to set up the templates for an app that uses bootstrap and the [Angular-UI Bootstrap pagination directive](http://angular-ui.github.io/bootstrap/#/pagination)
@@ -165,7 +167,7 @@ angular
     .config(['tableSortConfigProvider', function(tableSortConfigProvider){
         var filterString = "<div class='pull-right'>"
         filterString +=      "<div class='form-group' style='display:inline-block;'>";
-        filterString +=        "<input type='search' class='form-control' placeholder='filter items' ng-model='FILTER_STRING'/>";
+        filterString +=        "<input type='search' class='form-control' placeholder='filter {{ITEM_NAME_PLURAL}}' ng-model='FILTER_STRING'/>";
         filterString +=      "</div>";
         filterString +=    "</div>";
         filterString +=    "<div class='clearfix'></div>";
@@ -173,8 +175,8 @@ angular
         
         var pagerString = "<div class='pull-right'>"
         pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
-        pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} items</span>";
-        pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} items (filtered from {{TOTAL_COUNT | number}})</span>"
+        pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
+        pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} {{FILTERED_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}} (filtered from {{TOTAL_COUNT | number}})</span>"
         pagerString +=      "</small>&nbsp;"
         pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
         pagerString +=      "&nbsp;"
@@ -190,13 +192,15 @@ angular
 
 Only the templates above are required to use these features, but other options around filtering & pagination can be configured as well
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-|`filterTemplate`|`string`|`""`|HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
-|`paginationTemplate`|`string`|`""`|HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
-|`perPageOptions`|`array` of `number`|`[10, 25, 50, 100]`|The options for how many items to show on each page of results|
-|`perPageDefault`|`number`|`perPageOptions[0]`|The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.|
-|`filterFunction`|`function`|`null`|A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.|
+| Property           | Type              | Default                | Description |
+|--------------------|-------------------|------------------------|-------------|
+|`filterTemplate`    |`string`           |`""`                    |HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
+|`paginationTemplate`|`string`           |`""`                    |HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
+|`perPageOptions`    |`array` of `number`|`[10, 25, 50, 100]`     |The options for how many items to show on each page of results.  _(This can be overridden per-table)_|
+|`perPageDefault`    |`number`           |`perPageOptions[0]`     |The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.  _(This can be overridden per-table)_|
+|`itemNameSingular`  |`string`           |`"item"`                |The default singular version of the name for the items being iterated over. _(This can be overridden per-table)_|
+|`itemNamePlural`    |`string`           |`itemNameSingular + "s"`|The default plural version of the name for the items being iterated over. This just appends `"s"` to the singular name, which should work for most words in English. _(This can be overridden per-table)_|
+|`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
 
 ###Table Filtering & Pagination Usage
 
