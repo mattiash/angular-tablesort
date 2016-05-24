@@ -29,7 +29,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
         return templateString
             .replace(/FILTER_STRING/g,"filtering.filterString")
             .replace(/CURRENT_PAGE_RANGE/g,"pagination.getPageRangeString(TOTAL_COUNT)")
-            .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + ".length")
+            .replace(/TOTAL_COUNT/g, $scope.pagination.itemsArrayExpression + ".length")
             .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
             .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
             .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
@@ -43,6 +43,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 template: tableSortConfig.paginationTemplate,
                 perPageOptions: tableSortConfig.perPageOptions,
                 perPage: tableSortConfig.perPageDefault,
+                itemsArrayExpression: "", //this will contain the string expression for the array of items in the table
                 currentPage: 1,
                 getPageRangeString: function(total) {
                    return (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1 + "-" + Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, total);
@@ -56,7 +57,6 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 filterFields: []
            };
 
-            $scope.itemsArrayExpression = ""; //this will contain the string expression for the array of items in the table
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -146,7 +146,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
 
             this.setDataForPager = function(dataArrayExp){
-                $scope.itemsArrayExpression = dataArrayExp;
+                $scope.pagination.itemsArrayExpression = dataArrayExp;
             }
 
             $scope.sortFun = function( a, b ) {
@@ -231,9 +231,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
         }],
         link: function($scope, $element, $attrs){
             
-            //local attribute usages of the pagination/filtering options wil override the global config
+            //local attribute usages of the pagination/filtering options will override the global config
+            if($attrs.tsPerPageOptions){
+                $scope.pagination.perPageOptions = $scope.$eval($attrs.tsPerPageOptions);
+            }
+            if($attrs.tsPerPageDefault){
+                $scope.pagination.perPage = $scope.$eval($attrs.tsPerPageDefault);
+            }
             
-            if($scope.filtering.template !== ""){
+            if($attrs.tsFilteringEnabled !== "false" && $scope.filtering.template !== ""){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 var $filter = $compile(filterString)($scope);
                 //Add filtering HTML BEFORE the table - since jqLite has no `.before()` or `.insertBefore()` we have to do a little shuffling...
@@ -241,7 +247,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
             }
             
-            if($scope.pagination.template !== ""){
+            if($attrs.tsPaginationEnabled !== "false" && $scope.pagination.template !== ""){
                 var pagerString = replaceTemplateTokens($scope, $scope.pagination.template)
                 var $pager = $compile(pagerString)($scope);
                 //Add pagination HTML AFTER the table

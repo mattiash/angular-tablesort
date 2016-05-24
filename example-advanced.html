@@ -9,7 +9,13 @@
 
 <div ng-app="myApp" class="container" ng-cloak>
     <div ng-controller="tableTestCtrl">
-        <h1>Angular Tablesort <small>(With configured filtering & paging)</small></h1>
+        
+        <div class="alert alert-info">
+            <h4><span class="glyphicon glyphicon-info-sign"></span> About Pagination</h4>
+            <p>This demo page has examples that use the <a href="http://angular-ui.github.io/bootstrap/#/pagination" class="alert-link" target="_blank">Angular-UI Bootstrap pagination directive</a>, but really any pagination directive could be used here</p>
+        </div>
+        
+        <h2>With configured filtering & paging</small></h2>
         <table class="table table-striped" ts-wrapper>
             <thead>
                 <tr>
@@ -32,7 +38,59 @@
             </tr>
             </tbody>
         </table>
+        
+        <hr />
+        
+        <h2>Disabled filtering & paging</h2>
+        <table class="table table-striped" ts-wrapper ts-filtering-enabled="false" ts-pagination-enabled="false">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id" ts-filter>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in tableTwoItems track by item.Id"
+                ng-class="{'active':item.Selected}"
+                ts-repeat>
+                <td><input type="checkbox" ng-model="item.Selected" /></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
 
+        <hr />
+        
+        <h2>Disabled filtering & different per-page options</h2>
+        <table class="table table-striped" ts-wrapper ts-filtering-enabled="false" ts-per-page-options="[20,40,60]" ts-per-page-default="40">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id" ts-filter>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in tableThreeItems track by item.Id"
+                ng-class="{'active':item.Selected}"
+                ts-repeat>
+                <td><input type="checkbox" ng-model="item.Selected" /></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+        
     </div>
 </div>
 
@@ -42,23 +100,23 @@
 <script>
     function getFakeData(count){
         var items = [];
-            var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            function getRandLetter(){
-                return charset.charAt(Math.floor(Math.random() * charset.length));
-            }
+        var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        function getRandLetter(){
+            return charset.charAt(Math.floor(Math.random() * charset.length));
+        }
         for(var i = 0; i < count; i++){
-                var idStr = (i < 10 ? "0" + i : i).toString();
-                var nameStr = getRandLetter() + getRandLetter() + getRandLetter();
-                var priceStr = (Math.random()*100).toFixed(2);
-                var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
+            var idStr = (i < 10 ? "0" + i : i).toString();
+            var nameStr = getRandLetter() + getRandLetter() + getRandLetter();
+            var priceStr = (Math.random()*100).toFixed(2);
+            var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
             items.push({
-                    Id: idStr,
-                    Name: nameStr,
-                    Price: priceStr,
-                    Quantity: qty,
-                    selected: false
-                });
-            }
+                Id: idStr,
+                Name: nameStr,
+                Price: priceStr,
+                Quantity: qty,
+                selected: false
+            });
+        }
         return items;
     }
     
@@ -67,6 +125,8 @@
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
             //Generate some fake data
             $scope.tableOneItems = getFakeData(10000);
+            $scope.tableTwoItems = getFakeData(5);
+            $scope.tableThreeItems = getFakeData(100);
         });
 
     angular
