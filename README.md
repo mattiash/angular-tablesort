@@ -195,7 +195,7 @@ Only the templates above are required to use these features, but other options a
 |`filterTemplate`|`string`|`""`|HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
 |`paginationTemplate`|`string`|`""`|HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
 |`perPageOptions`|`array` of `number`|`[10, 25, 50, 100]`|The options for how many items to show on each page of results|
-|`perPageDefault`|`perPageOptions[0]`|`10`|The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.|
+|`perPageDefault`|`number`|`perPageOptions[0]`|The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.|
 |`filterFunction`|`function`|`null`|A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.|
 
 ###Table Filtering & Pagination Usage
