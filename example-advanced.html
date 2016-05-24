@@ -68,21 +68,37 @@
     angular
         .module('myApp')
         .config(['tableSortConfigProvider', function(tableSortConfigProvider){
-
-                var pagerString = "<div class='pull-right'>"
-                pagerString +=    "  <small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
-                pagerString +=       "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT}} items</span>";
-                pagerString +=       "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT}} items (filtered from {{TOTAL_COUNT}})</span>"
-                pagerString +=    "  </small>&nbsp;"
-                pagerString +=    "  <uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
-                pagerString +=    "  &nbsp;"
-                pagerString +=    "  <div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
-                pagerString +=    "</div>";
-                pagerString +=    "<div class='clearfix'></div>";
-
-                tableSortConfigProvider.paginationTemplate = pagerString;
-            }
-        ]);
+            /* Template Tokens - all are replaced by Angular expressions
+             * TOTAL_COUNT         - The number for the total count of items in the table
+             * FILTERED_COUNT      - The number for the total count of items in the table after the filter has been applied
+             * FILTER_STRING       - The string used for the `ng-model` of the text filter
+             * PER_PAGE_OPTIONS    - The array of numbers for the verious page size options
+             * ITEMS_PER_PAGE      - The number for the selected number of items to display per page (the selected item from PER_PAGE_OPTIONS)
+             * CURRENT_PAGE_NUMBER - The number for the page that is currently being viewed
+             * CURRENT_PAGE_RANGE  - The number for the current viewable range of pages
+             */
+            
+            var pagerString = "<div class='pull-right'>"
+            pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
+            pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT}} items</span>";
+            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT}} items (filtered from {{TOTAL_COUNT}})</span>"
+            pagerString +=      "</small>&nbsp;"
+            pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
+            pagerString +=      "&nbsp;"
+            pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
+            pagerString +=    "</div>";
+            pagerString +=    "<div class='clearfix'></div>";
+            tableSortConfigProvider.paginationTemplate = pagerString;
+            
+            var filterString = "<div class='pull-right'>"
+            filterString +=      "<div class='form-group' style='display:inline-block;'>";
+            filterString +=        "<input type='search' class='form-control' placeholder='filter items' ng-model='FILTER_STRING'/>";
+            filterString +=      "</div>";
+            filterString +=    "</div>";
+            filterString +=    "<div class='clearfix'></div>";
+            tableSortConfigProvider.filterTemplate = filterString;
+        }
+    ]);
 </script>
 </body>
 </html>

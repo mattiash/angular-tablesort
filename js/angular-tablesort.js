@@ -6,13 +6,13 @@
 
 //TODO: Make paging optional
 //TODO: Paging options
-//TODO: Make filtering optional & customizable (only certain fields, different UI's, etc.)
-//TODO: Add templates & configs for paging & filtering (filtering could be text, dropdown, etc...)
+//TODO: Make filtering customizable (only certain fields, different UI's, etc.)
 //TODO: Submit PR
 
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.provider('tableSortConfig', function () {
+    this.filterTemplate = "";
     this.paginationTemplate = "";
     
     this.$get = function () {
@@ -23,9 +23,23 @@ tableSortModule.provider('tableSortConfig', function () {
 
 tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, $compile ) {
     'use strict';
+    
+    function replaceTemplateTokens($scope, templateString){
+        //Replace some strings with the proper expressions to be compiled
+        return templateString
+            .replace(/FILTER_STRING/g,"filtering.filterString")
+            .replace(/CURRENT_PAGE_RANGE/g,"getPageRangeString(TOTAL_COUNT)")
+            .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + ".length")
+            .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
+            .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
+            .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
+            .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage");
+    }
+    
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
+            $scope.filterTemplate =  tableSortConfig.filterTemplate;
             $scope.paginationTemplate =  tableSortConfig.paginationTemplate;
             
             $scope.sortExpression = [];
@@ -219,32 +233,19 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
         }],
         link: function($scope, $element){
-            //Wrap the table in a new element
-            $element.wrap("<div class='ts-container'></div>");
-            var $container = $element.parent();
-            //==============================
-            //Add filtering HTML before the table
-            var filterString = "<div class='pull-right'>"
-            filterString +=    "  <div class='form-group' style='display:inline-block;'><label class='control-label'>Filter Items</label><input type='search' class='form-control' ng-model='filtering.filterString'/></div>";
-            filterString +=    "</div>";
-            filterString +=    "<div class='clearfix'></div>";
-            var $filter = $compile(filterString)($scope);
-            $container.prepend($filter);
-            //==============================
-            //Add pagination HTML after the table
+            if($scope.filterTemplate !== ""){
+                var filterString = replaceTemplateTokens($scope, $scope.filterTemplate);
+                var $filter = $compile(filterString)($scope);
+                //Add filtering HTML BEFORE the table - since jqLite has no `.before()` or `.insertBefore()` we have to do a little shuffling...
+                $element.after($filter); //first we add the filter after the table
+                $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
+            }
+            
             if($scope.paginationTemplate !== ""){
-                
-                //Replace some strings with the proper expressions to be compiled
-                var pagerString = $scope.paginationTemplate
-                    .replace(/CURRENT_PAGE_RANGE/g,"getPageRangeString(TOTAL_COUNT)")
-                    .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + ".length")
-                    .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
-                    .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
-                    .replace(/FILTERED_COUNT/g,"filtering.filteredCount")
-                    .replace(/CURRENT_PAGE_NUMBER/g,"pagination.currentPage");
-                    
+                var pagerString = replaceTemplateTokens($scope, $scope.paginationTemplate)
                 var $pager = $compile(pagerString)($scope);
-                $container.append($pager);
+                //Add pagination HTML AFTER the table
+                $element.after($pager);
             }
         }
     };
