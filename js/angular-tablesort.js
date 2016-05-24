@@ -219,7 +219,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     var shouldInclude = false;
                     for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
                         if(!shouldInclude){
-                            var str = $scope.filtering.filterFields[i][0](item).toString();
+                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString();
                             shouldInclude = str.indexOf($scope.filtering.filterString) > -1;
                         }
                     }
