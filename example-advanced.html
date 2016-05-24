@@ -46,8 +46,8 @@
             <thead>
                 <tr>
                     <th>Select</th>
-                    <th ts-criteria="Id" ts-filter>Id</th>
-                    <th ts-criteria="Name|lowercase" ts-filter ts-default>Name</th>
+                    <th ts-criteria="Id" ts-filter ts-default>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter>Name</th>
                     <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
                     <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
                 </tr>
@@ -125,7 +125,7 @@
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
             //Generate some fake data
             $scope.tableOneItems = getFakeData(10000);
-            $scope.tableTwoItems = getFakeData(5);
+            $scope.tableTwoItems = getFakeData(12);
             $scope.tableThreeItems = getFakeData(100);
         });
 

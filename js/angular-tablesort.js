@@ -46,6 +46,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 itemsArrayExpression: "", //this will contain the string expression for the array of items in the table
                 currentPage: 1,
                 getPageRangeString: function(total) {
+                    //TODO: Format these numbers, perhaps optionally
                    return (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1 + "-" + Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, total);
                 }
             };
@@ -145,10 +146,12 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.filtering.filterFields.push( expr )
             };
 
-            this.setDataForPager = function(dataArrayExp){
+            this.setDataForPager = function( dataArrayExp ){
                 $scope.pagination.itemsArrayExpression = dataArrayExp;
             }
-
+        }],
+        link: function($scope, $element, $attrs){
+            
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
@@ -196,6 +199,10 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
 
             $scope.pageLimitFun = function(array){
+                if($attrs.tsPaginationEnabled === "false"){
+                    //pagination is disabled, so return everything
+                    return array;
+                }
                 //Only return the items that are in the correct index range for the currently selected page
                 var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
                 var end = ($scope.pagination.currentPage) * $scope.pagination.perPage;
@@ -228,8 +235,6 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.filtering.filteredCount = filteredArr.length;
                 return filteredArr;
             };
-        }],
-        link: function($scope, $element, $attrs){
             
             //local attribute usages of the pagination/filtering options will override the global config
             if($attrs.tsPerPageOptions){
