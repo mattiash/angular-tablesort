@@ -8,7 +8,7 @@ Web site: [http://mattiash.github.io/angular-tablesort](http://mattiash.github.i
 Background
 ----------
 
-When you use jquery to build your web-pages, it is very easy to add sorting-functionality to your tables - include [tablesorter](http://tablesorter.com) and annotate your column headings slightly to tell it what type of data your table contains.
+When you use jquery to build your web-pages, it is very easy to add sorting functionality to your tables - include [tablesorter](http://tablesorter.com) and annotate your column headings slightly to tell it what type of data your table contains.
 
 The goal with this module is to make it just as easy to add sorting to AngularJS tables, but with proper use of angular features and not jquery.
 
@@ -134,4 +134,147 @@ all columns and placed inside a `<tr>` with class `showIfLast` The `<tr>` is pla
 To disable this feature add the attribute `ts-hide-no-data` to the `ts-repeat` row:
 ```html
 <tr ng-repeat="item in items" ts-repeat ts-hide-no-data>
+```
+
+Configuring Filtering & Pagination
+---
+
+By default table filtering & pagination are supported, but not enabled so that this does not include extra code or rely on 3rd party code to do complicated things like pagination especially for those that do not want it.
+
+To set up these features, you must provide some configuration HTML string templates.  These will be the default templates for filtering & pagination for all tables use in the same app unless that feature is specifically disabled on a per-table basis.
+
+###Template Tokens
+There are a few tokens that are replaced with the proper Angular expressions.
+
+| Token                 | Description                                                                                                 |
+|-----------------------|-------------------------------------------------------------------------------------------------------------|
+| `TOTAL_COUNT`         | The number for the total count of items in the table                                                        |
+| `FILTERED_COUNT`      | The number for the total count of items in the table after the filter has been applied                      |
+| `FILTER_STRING`       | The string used for the `ng-model` of the text filter                                                       |
+| `PER_PAGE_OPTIONS`    | The array of numbers for the verious page size options                                                      |
+| `ITEMS_PER_PAGE`      | The number for the selected number of items to display per page (the selected item from `PER_PAGE_OPTIONS`) |
+| `CURRENT_PAGE_NUMBER` | The number for the page that is currently being viewed                                                      |
+| `CURRENT_PAGE_RANGE`  | The number for the current viewable range of pages                                                          |
+
+
+Here is an example of one way to set up the templates for an app that uses bootstrap and the [Angular-UI Bootstrap pagination directive](http://angular-ui.github.io/bootstrap/#/pagination)
+
+```js
+angular
+    .module('myApp')
+    .config(['tableSortConfigProvider', function(tableSortConfigProvider){
+        var filterString = "<div class='pull-right'>"
+        filterString +=      "<div class='form-group' style='display:inline-block;'>";
+        filterString +=        "<input type='search' class='form-control' placeholder='filter items' ng-model='FILTER_STRING'/>";
+        filterString +=      "</div>";
+        filterString +=    "</div>";
+        filterString +=    "<div class='clearfix'></div>";
+        tableSortConfigProvider.filterTemplate = filterString;
+        
+        var pagerString = "<div class='pull-right'>"
+        pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
+        pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} items</span>";
+        pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} items (filtered from {{TOTAL_COUNT | number}})</span>"
+        pagerString +=      "</small>&nbsp;"
+        pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
+        pagerString +=      "&nbsp;"
+        pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
+        pagerString +=    "</div>";
+        pagerString +=    "<div class='clearfix'></div>";
+        tableSortConfigProvider.paginationTemplate = pagerString;
+    }
+]);
+```
+
+###Configuration Options
+
+Only the templates above are required to use these features, but other options around filtering & pagination can be configured as well
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+|`filterTemplate`|`string`|`""`|HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
+|`paginationTemplate`|`string`|`""`|HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
+|`perPageOptions`|`array` of `number`|`[10, 25, 50, 100]`|The options for how many items to show on each page of results|
+|`perPageDefault`|`perPageOptions[0]`|`10`|The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.|
+|`filterFunction`|`function`|`null`|A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.|
+
+###Table Filtering & Pagination Usage
+
+To mark a column as filterable, add the `ts-filter` attribute to the `<th>` element.  The property specified in the `ts-criteria` attribute will be used to filter.
+
+ ```html
+<thead>
+  <tr>
+    <th ts-filter="Id">Id</th>
+    <th ts-criteria="Name|lowercase" ts-default ts-filter>Name</th>
+    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+  </tr>
+</thead>
+```
+**NOTE** that the `ts-filter` attribute is not needed if custom filtering using the `ts-filter-function` attribute is used.
+
+####Certain options can be overridden or disabled on a per-table basis.
+
+Set the `ts-per-page-options` attribute on the same element that `tw-wrapper` is set on to override the options for the number of items avialable per page.
+Set the `ts-per-page-default` attribute on the same element that `tw-wrapper` is set on to override the default number of items avaialable per page.
+  
+ ```html
+<table ts-wrapper ts-per-page-options="[5, 10, 15, 30]" ts-per-page-default="15">
+```
+
+If filtering or pagination is configured globally, but you wish to disable either of these features per table you can set `ts-display-filtering="false"` and/or `ts-display-pagination="false"` on the same element as `ts-wrapper`
+
+ ```html
+<table ts-wrapper ts-display-filtering="false" ts-display-pagination="false">
+```
+
+####Customized Filtering
+
+To have a custom UI for filtering, build the UI around the table however you want and simply provide the `ts-filter-function` attribute with a function that will return a `boolean` for the item being iterated over.  This attribute must be set on the same element as `ts-wrapper`
+If filtering has been globally configured it is probably a good idea to also set `ts-display-filtering="false"`
+**NOTE** that the `ts-filter` attribute is not needed for custom filtering.
+
+ ```js
+$scope.data = [
+   {id:1, name:"Product A", enabled: false},
+   {id:2, name:"Product B", enabled: true},
+   {id:3, name:"Product C", enabled: true}
+ ];
+$scope.customFilterValue = "";
+$scope.customFilterFn = function(item){
+    if($scope.customFilterValue == ""){
+        return true;
+    } else if($scope.customFilterValue === "false"){
+        return !item.enabled
+    } else {
+        return item.enabled
+    }
+};
+ ```
+ 
+ ```html
+<label>Enabled</label>
+<select ng-model="customFilterValue">
+  <option value="">Show All</option>
+  <option value="true">Only Enabled Products</option>
+  <option value="false">Only Disabled Products</option>
+</select>
+
+<table ts-wrapper ts-display-filtering="false" ts-filter-function="customFilterFn">
+      <thead>
+        <tr>
+            <th ts-criteria="id">Id</th>
+            <th ts-criteria="name|lowercase" ts-default>Name</th>
+            <th ts-criteria="enabled">enabled</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="item in data track by item.id" ts-repeat>
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.enabled}}</td>
+        </tr>
+    </tbody>
+</table>
 ```

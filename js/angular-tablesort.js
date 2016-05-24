@@ -7,11 +7,11 @@
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.provider('tableSortConfig', function () {
-    this.filterTemplate = "";
-    this.filterFunction = null;
-    this.paginationTemplate = "";
+    this.filterTemplate = ""; //no filtering by default unless a template is provided
+    this.filterFunction = null; //empty by default - use the built in filter function when left blank
+    this.paginationTemplate = ""; //no pagination by default unless a template is provided
     this.perPageOptions = [10, 25, 50, 100];
-    this.perPageDefault = 10;
+    this.perPageDefault = this.perPageOptions[0]; //first option by default
     
     this.$get = function () {
         return this;

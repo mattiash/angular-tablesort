@@ -16,7 +16,7 @@
         </div>
         
         <hr />
-        
+
         <h2>With configured filtering & paging</small></h2>
         <table class="table table-striped" ts-wrapper>
             <thead>
@@ -116,7 +116,7 @@
         <hr />
         
         <h2>Disabled filtering & different per-page options</h2>
-        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-per-page-options="[20,40,60]" ts-per-page-default="40">
+        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-per-page-options="customPerPageOptions" ts-per-page-default="customPerPageDefault">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -176,6 +176,9 @@
             $scope.tableTwoItems = getFakeData(100);
             $scope.tableThreeItems = getFakeData(12);
             $scope.tableFourItems = getFakeData(100);
+            
+            $scope.customPerPageOptions = [20,40,60];
+            $scope.customPerPageDefault = 40;
             
             //Custom filter stuff (tableTwoItems)
             $scope.customNameFilter = "";
