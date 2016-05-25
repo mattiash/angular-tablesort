@@ -72,6 +72,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
+            $scope.noDataText = tableSortConfig.noDataText;
             $scope.sortExpression = [];
             $scope.headings = [];
             
@@ -169,9 +170,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
         link: function($scope, $element, $attrs){
             
             if($attrs.tsItemName){
+                var originalNoDataText = "No " + $scope.itemNamePlural;
+
                 //if the table attributes has an item name on it, this takes priority
                 $scope.itemNameSingular = $attrs.tsItemName;
-                
+
                 if($attrs.tsItemNamePlural){
                     //if a plural name was specified, use that
                     $scope.itemNamePlural = $attrs.tsItemNamePlural;
@@ -179,6 +182,16 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     //otherwise just add "s" to the singular name
                     $scope.itemNamePlural = $attrs.tsItemName + "s";
                 }
+
+                if(!$attrs.tsNoDataText && $scope.noDataText === originalNoDataText){
+                    //If the noDataText was NOT specified AND it's in the same "No ITEMS" format as the default , update it to contain the new item name
+                    $scope.noDataText = "No " + $scope.itemNamePlural;
+                }
+            }
+
+            if($attrs.tsNoDataText){
+                //If the noDataText was specified, update it
+                $scope.noDataText = $attrs.tsNoDataText;
             }
 
             //local attribute usages of the pagination/filtering options will override the global config
@@ -372,18 +385,18 @@ tableSortModule.directive("tsRepeat", ['$compile', 'tableSortConfig', function($
             } else {
                 repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun$3");
             }
-            
+
             if (angular.isUndefined(attrs.tsHideNoData)) {
                 var noDataRow = angular.element(element[0]).clone();
                 noDataRow.removeAttr(ngRepeatDirective);
                 noDataRow.removeAttr(tsRepeatDirective);
                 noDataRow.addClass("showIfLast");
                 noDataRow.children().remove();
-                noDataRow.append('<td colspan="' + element[0].childElementCount + '">'+ tableSortConfig.noDataText +'</td>');
+                noDataRow.append('<td colspan="' + element[0].childElementCount + '">{{noDataText}}</td>');
                 noDataRow = $compile(noDataRow)(scope);
                 element.parent().prepend(noDataRow);
             }
-            
+
             //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions 
             tsWrapperCtrl.setDataForPager(repeatInMatch[2])
 
