@@ -14,7 +14,13 @@ tableSortModule.provider('tableSortConfig', function () {
     this.perPageDefault = this.perPageOptions[0]; //first option by default
     this.itemNameSingular = "item";
     this.itemNamePlural = this.itemNameSingular + "s";
-    this.noDataText = "No Data";
+    this.noDataText = "No " + this.itemNamePlural;
+    
+    if(!isNaN(this.perPageDefault) && this.perPageOptions.indexOf(this.perPageDefault) === -1){
+        //If a default per-page option was added that isn't in the array, add it and sort the array 
+        this.perPageOptions.push(this.perPageDefault);
+        this.perPageOptions.sort(function (a,b) {return a - b;}); 
+    }
     
     this.$get = function () {
         return this;
@@ -41,16 +47,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
     
     return {
         scope: true,
-        controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig) {
-            if(!isNaN(tableSortConfig.perPageDefault) && tableSortConfig.perPageOptions.indexOf(tableSortConfig.perPageDefault) === -1){
-                //If a default per-page option was added that isn't in the array, add it and sort the array 
-                tableSortConfig.perPageOptions.push(tableSortConfig.perPageDefault);
-                tableSortConfig.perPageOptions.sort(function (a,b) {return a - b;}); 
-            }
-
+        controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig ) {
+            //local scope vars for this directive
             $scope.pagination = {
                 template: tableSortConfig.paginationTemplate,
-                perPageOptions: tableSortConfig.perPageOptions,
+                perPageOptions: tableSortConfig.perPageOptions.concat(), //copy the array, not a reference
                 perPage: tableSortConfig.perPageDefault,
                 itemsArrayExpression: "", //this will contain the string expression for the array of items in the table
                 currentPage: 1,
@@ -71,14 +72,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
-
             $scope.sortExpression = [];
             $scope.headings = [];
-
+            
+            //Private vars
             var parse_sortexpr = function( expr, name ) {
                 return [$parse( expr ), null, false, name ? name : expr];
             };
 
+            //Public directive vars for the other directives that depend on this
             this.setSortField = function( sortexpr, element, name ) {
                 var i;
                 var expr = parse_sortexpr( sortexpr, name );
@@ -178,7 +180,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     $scope.itemNamePlural = $attrs.tsItemName + "s";
                 }
             }
-            
+
             //local attribute usages of the pagination/filtering options will override the global config
             if($attrs.tsPerPageOptions){
                 $scope.pagination.perPageOptions = $scope.$eval($attrs.tsPerPageOptions);
@@ -195,7 +197,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                 }
             }
-            
+
             if($attrs.tsFilterFunction){
                 //if the table attributes has a filter function on it, this takes priority
                 $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
