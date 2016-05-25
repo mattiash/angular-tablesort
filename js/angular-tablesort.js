@@ -335,7 +335,7 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", ['$compile', 'tableSortConfig', function($compile, tableSortConfig) {
+tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     return {
         terminal: true,
         multiElement: true,
