@@ -14,6 +14,7 @@ tableSortModule.provider('tableSortConfig', function () {
     this.perPageDefault = this.perPageOptions[0]; //first option by default
     this.itemNameSingular = "item";
     this.itemNamePlural = this.itemNameSingular + "s";
+    this.noDataText = "No Data";
     
     this.$get = function () {
         return this;
@@ -336,7 +337,7 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
+tableSortModule.directive("tsRepeat", ['$compile', 'tableSortConfig', function($compile, tableSortConfig) {
     return {
         terminal: true,
         multiElement: true,
@@ -377,7 +378,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 noDataRow.removeAttr(tsRepeatDirective);
                 noDataRow.addClass("showIfLast");
                 noDataRow.children().remove();
-                noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
+                noDataRow.append('<td colspan="' + element[0].childElementCount + '">'+ tableSortConfig.noDataText +'</td>');
                 noDataRow = $compile(noDataRow)(scope);
                 element.parent().prepend(noDataRow);
             }

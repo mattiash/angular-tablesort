@@ -129,17 +129,48 @@ $scope.$on('tablesort:sortOrder', (event, sortOrder) => {
 
 All table headings that can be sorted on is styled with css-class `tablesort-sortable`. The table headings that the table is currently sorted on is styled with `tablesort-asc` or `tablesort-desc` classes depending on the sort-direction. A stylesheet is included to show that it works, but you probably want to build your own.
 
-By default the content and look of the data for empty tables is controlled via css. It is inserted as one empty `<td>` spanning
-all columns and placed inside a `<tr>` with class `showIfLast` The `<tr>` is placed at the top of each table. 
+
+Empty Tables
+---
+
+By default the content for the empty table cell is set to `"No Data"`, however it can be changed via the `noDataText` configuration option (see below). It is inserted as one `<td>` spanning
+all columns and placed inside a `<tr class="showIfLast">`, which is placed at the top of each table. 
+
 To disable this feature add the attribute `ts-hide-no-data` to the `ts-repeat` row:
 ```html
 <tr ng-repeat="item in items" ts-repeat ts-hide-no-data>
 ```
 
-Configuring Filtering & Pagination
+Configuring Global Options
 ---
 
-By default table filtering & pagination are supported, but not enabled so that this does not include extra code or rely on 3rd party code to do complicated things like pagination especially for those that do not want it.
+Several options may be configured globally per-app.
+
+
+| Property           | Type              | Default                | Description |
+|--------------------|-------------------|------------------------|-------------|
+|`filterTemplate`    |`string`           |`""`                    |HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
+|`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
+|`itemNameSingular`  |`string`           |`"item"`                |The default singular version of the name for the items being iterated over. _(This can be overridden per-table)_|
+|`itemNamePlural`    |`string`           |`itemNameSingular + "s"`|The default plural version of the name for the items being iterated over. This just appends `"s"` to the singular name, which should work for most words in English. _(This can be overridden per-table)_|
+|`noDataText`        |`string`           |`"No Data"`             |The text that displays in the `.showIfLast` cell shown when a table is empty|
+|`paginationTemplate`|`string`           |`""`                    |HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
+|`perPageOptions`    |`array` of `number`|`[10, 25, 50, 100]`     |The options for how many items to show on each page of results.  _(This can be overridden per-table)_|
+|`perPageDefault`    |`number`           |`perPageOptions[0]`     |The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.  _(This can be overridden per-table)_|
+
+
+```js
+angular
+    .module('myApp')
+    .config(['tableSortConfigProvider', function(tableSortConfigProvider){
+        tableSortConfigProvider.noDataText = "This table has nothing to show!";
+    }
+]);
+```
+
+###Filtering & Pagination Templates
+
+By default table filtering & pagination are supported, but not enabled so that you may use any UI and any 3rd party angular code to do these types of things.
 
 To set up these features, you must provide some configuration HTML string templates.  These will be the default templates for filtering & pagination for all tables use in the same app unless that feature is specifically disabled on a per-table basis.
 
@@ -162,9 +193,11 @@ angular
         pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
         pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} {{FILTERED_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}} (filtered from {{TOTAL_COUNT | number}})</span>"
         pagerString +=      "</small>&nbsp;"
-        pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
-        pagerString +=      "&nbsp;"
-        pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
+        pagerString +=      "<uib-pagination style='vertical-align:middle;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' ";
+        pagerString +=        "total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>&nbsp;";
+        pagerString +=      "<div class='form-group' style='display:inline-block;'>"
+        pagerString +=        "<select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select>";
+        pagerString +=      "</div>";
         pagerString +=    "</div>";
         pagerString +=    "<div class='clearfix'></div>";
         tableSortConfigProvider.paginationTemplate = pagerString;
@@ -172,7 +205,6 @@ angular
 ]);
 ```
 
-###Template Tokens
 There are several tokens that can be used in the templates which will be replaced with the proper Angular expressions.
 
 | Token                 | Description                                                                                                 |
@@ -187,20 +219,6 @@ There are several tokens that can be used in the templates which will be replace
 | `ITEM_NAME_SINGULAR`  | The singular version of the name of the items being iterated over                                           |
 | `ITEM_NAME_PLURAL`    | The plural version of the name of the items being iterated over                                             |
 
-
-###Configuration Options
-
-Only the templates above are required to use these features, but other options around filtering & pagination can be configured as well
-
-| Property           | Type              | Default                | Description |
-|--------------------|-------------------|------------------------|-------------|
-|`filterTemplate`    |`string`           |`""`                    |HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
-|`paginationTemplate`|`string`           |`""`                    |HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
-|`perPageOptions`    |`array` of `number`|`[10, 25, 50, 100]`     |The options for how many items to show on each page of results.  _(This can be overridden per-table)_|
-|`perPageDefault`    |`number`           |`perPageOptions[0]`     |The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.  _(This can be overridden per-table)_|
-|`itemNameSingular`  |`string`           |`"item"`                |The default singular version of the name for the items being iterated over. _(This can be overridden per-table)_|
-|`itemNamePlural`    |`string`           |`itemNameSingular + "s"`|The default plural version of the name for the items being iterated over. This just appends `"s"` to the singular name, which should work for most words in English. _(This can be overridden per-table)_|
-|`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
 
 ###Item Names
 
