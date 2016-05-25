@@ -143,22 +143,6 @@ By default table filtering & pagination are supported, but not enabled so that t
 
 To set up these features, you must provide some configuration HTML string templates.  These will be the default templates for filtering & pagination for all tables use in the same app unless that feature is specifically disabled on a per-table basis.
 
-###Template Tokens
-There are a few tokens that are replaced with the proper Angular expressions.
-
-| Token                 | Description                                                                                                 |
-|-----------------------|-------------------------------------------------------------------------------------------------------------|
-| `TOTAL_COUNT`         | The number for the total count of items in the table                                                        |
-| `FILTERED_COUNT`      | The number for the total count of items in the table after the filter has been applied                      |
-| `FILTER_STRING`       | The string used for the `ng-model` of the text filter                                                       |
-| `PER_PAGE_OPTIONS`    | The array of numbers for the various page size options                                                      |
-| `ITEMS_PER_PAGE`      | The number for the selected number of items to display per page (the selected item from `PER_PAGE_OPTIONS`) |
-| `CURRENT_PAGE_NUMBER` | The number for the page that is currently being viewed                                                      |
-| `CURRENT_PAGE_RANGE`  | The number for the current viewable range of pages                                                          |
-| `ITEM_NAME_SINGULAR`  | The singular version of the name of the items being iterated over                                           |
-| `ITEM_NAME_PLURAL`    | The plural version of the name of the items being iterated over                                             |
-
-
 Here is an example of one way to set up the templates for an app that uses bootstrap and the [Angular-UI Bootstrap pagination directive](http://angular-ui.github.io/bootstrap/#/pagination)
 
 ```js
@@ -187,6 +171,22 @@ angular
     }
 ]);
 ```
+
+###Template Tokens
+There are several tokens that can be used in the templates which will be replaced with the proper Angular expressions.
+
+| Token                 | Description                                                                                                 |
+|-----------------------|-------------------------------------------------------------------------------------------------------------|
+| `TOTAL_COUNT`         | The number for the total count of items in the table                                                        |
+| `FILTERED_COUNT`      | The number for the total count of items in the table after the filter has been applied                      |
+| `FILTER_STRING`       | The string used for the `ng-model` of the text filter                                                       |
+| `PER_PAGE_OPTIONS`    | The array of numbers for the various page size options                                                      |
+| `ITEMS_PER_PAGE`      | The number for the selected number of items to display per page (the selected item from `PER_PAGE_OPTIONS`) |
+| `CURRENT_PAGE_NUMBER` | The number for the page that is currently being viewed                                                      |
+| `CURRENT_PAGE_RANGE`  | The number for the current viewable range of pages                                                          |
+| `ITEM_NAME_SINGULAR`  | The singular version of the name of the items being iterated over                                           |
+| `ITEM_NAME_PLURAL`    | The plural version of the name of the items being iterated over                                             |
+
 
 ###Configuration Options
 
