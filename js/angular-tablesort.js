@@ -77,14 +77,14 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             $scope.headings = [];
             
             //Private vars
-            var parse_sortexpr = function( expr, name ) {
-                return [$parse( expr ), null, false, name ? name : expr];
+            var parse_sortexpr = function( expr ) {
+                return [$parse( expr ), null, false];
             };
 
             //Public directive vars for the other directives that depend on this
-            this.setSortField = function( sortexpr, element, name ) {
+            this.setSortField = function( sortexpr, element ) {
                 var i;
-                var expr = parse_sortexpr( sortexpr, name );
+                var expr = parse_sortexpr( sortexpr );
                 if( $scope.sortExpression.length === 1
                     && $scope.sortExpression[0][0] === expr[0] ) {
                     if( $scope.sortExpression[0][2] ) {
@@ -97,10 +97,6 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                         element.addClass( "tablesort-desc" );
                         $scope.sortExpression[0][2] = true;
                     }
-                    $scope.$emit('tablesort:sortOrder', [{
-                      name: $scope.sortExpression[0][3],
-                      order: $scope.sortExpression[0][2]
-                    }]);
                 }
                 else {
                     for( i=0; i<$scope.headings.length; i=i+1 ) {
@@ -110,17 +106,13 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                     element.addClass( "tablesort-asc" );
                     $scope.sortExpression = [expr];
-                    $scope.$emit('tablesort:sortOrder', [{
-                      name: expr[3],
-                      order: expr[2]
-                    }]);
                 }
             };
 
-            this.addSortField = function( sortexpr, element, name ) {
+            this.addSortField = function( sortexpr, element ) {
                 var i;
                 var toggle_order = false;
-                var expr = parse_sortexpr( sortexpr, name );
+                var expr = parse_sortexpr( sortexpr );
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
                     if( $scope.sortExpression[i][0] === expr[0] ) {
                         if( $scope.sortExpression[i][2] ) {
@@ -140,14 +132,6 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     element.addClass( "tablesort-asc" );
                     $scope.sortExpression.push( expr );
                 }
-
-                $scope.$emit('tablesort:sortOrder', $scope.sortExpression.map(function (a) {
-                  return {
-                    name: a[3],
-                    order: a[2]
-                  };
-                }));
-
             };
 
             this.setTrackBy = function( trackBy ) {
@@ -158,8 +142,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.headings.push( headingelement );
             };
 
-            this.addFilterField = function( sortexpr, element, name ) {
-                var expr = parse_sortexpr( sortexpr, name );
+            this.addFilterField = function( sortexpr, element ) {
+                var expr = parse_sortexpr( sortexpr );
                 $scope.filtering.filterFields.push( expr )
             };
 
@@ -328,23 +312,23 @@ tableSortModule.directive('tsCriteria', function() {
             var clickingCallback = function(event) {
                 scope.$apply( function() {
                     if( event.shiftKey ) {
-                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element, attrs.tsName);
+                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element);
                     }
                     else {
-                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName);
+                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element);
                     }
                 } );
             };
             element.bind('click', clickingCallback);
             element.addClass('tablesort-sortable');
             if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
-                tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
+                tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
                 if( attrs.tsDefault == "descending" ) {
-                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
+                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
                 }
             }
             if( "tsFilter" in attrs) {
-                tsWrapperCtrl.addFilterField( attrs.tsCriteria, element, attrs.tsName );
+                tsWrapperCtrl.addFilterField( attrs.tsCriteria, element );
             }
             tsWrapperCtrl.registerHeading( element );
         }
