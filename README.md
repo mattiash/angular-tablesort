@@ -259,7 +259,7 @@ To mark a column as filterable, add the `ts-filter` attribute to the `<th>` elem
 ```
 **NOTE** that the `ts-filter` attribute is not needed if custom filtering using the `ts-filter-function` attribute.
 
-####Certain options can be overridden or disabled on a per-table basis.
+####Customized Pagination Options
 
 Set the `ts-per-page-options` attribute on the same element that `tw-wrapper` is set on to override the options for the number of items available per page.
 
