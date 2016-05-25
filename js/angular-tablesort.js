@@ -416,3 +416,10 @@ tableSortModule.filter( 'parseFloat', function(){
         return parseFloat( input ) || null;
     };
 } );
+
+tableSortModule.filter('parseDate', function () {
+	return function (input) {
+		var timestamp = Date.parse(input);
+		return isNaN(timestamp) ? null : timestamp;
+	};
+} );
