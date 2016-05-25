@@ -44,12 +44,13 @@
         
         <hr />
         
-        <h2>Custom Filtering UI & function</small></h2>
+        <h2>Custom Filtering UI, filter function, & "no data" message</small></h2>
         <div class="row">
             <div class="col-xs-6 col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-6">
-                <div class="form-group">
+                <div class="form-group has-feedback">
                     <label for="cstm-filter-name" class="control-label">Name</label>
                     <input type="search" id="cstm-filter-name" class="form-control" ng-model="customNameFilter" />
+                    <span class='glyphicon glyphicon-search form-control-feedback' aria-hidden=true'></span>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3">
@@ -65,7 +66,7 @@
             </div>
         </div>
         
-        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-filter-function="customFilterFn">
+        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-filter-function="customFilterFn" ts-no-data-text="Nothing to see here!">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -116,8 +117,8 @@
 
         <hr />
         
-        <h2>Disabled filtering & different per-page options</h2>
-        <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-per-page-options="customPerPageOptions" ts-per-page-default="customPerPageDefault">
+        <h2>Different per-page options</h2>
+        <table class="table table-striped" ts-wrapper ts-per-page-options="customPerPageOptions" ts-per-page-default="customPerPageDefault">
             <thead>
                 <tr>
                     <th>Select</th>
