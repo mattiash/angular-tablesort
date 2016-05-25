@@ -294,9 +294,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== ""){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 var $filter = $compile(filterString)($scope);
-                //Add filtering HTML BEFORE the table - since jqLite has no `.before()` or `.insertBefore()` we have to do a little shuffling...
-                $element.after($filter); //first we add the filter after the table
-                $filter.after($element); //then we move the table after the filter, now the filter appears above the table!
+                //Add filtering HTML BEFORE the table
+                $element.parent()[0].insertBefore($filter[0], $element[0]);
             }
 
             if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
