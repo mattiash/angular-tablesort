@@ -112,7 +112,7 @@ be used to provide a [stable](http://en.wikipedia.org/wiki/Sorting_algorithm#Sta
 Events
 ------
 
-When changing sorting in the table, an event named tablesort:sortOrder will be emitted which contains an array of all current sorting definitions.
+When changing sorting in the table, an event named `tablesort:sortOrder` will be emitted which contains an array of all current sorting definitions.
 These sorting definitions could be used to set up sorted data retrieval when using other directives that handle things like pagination or filtering.
 
 ```js
@@ -151,7 +151,7 @@ There are a few tokens that are replaced with the proper Angular expressions.
 | `TOTAL_COUNT`         | The number for the total count of items in the table                                                        |
 | `FILTERED_COUNT`      | The number for the total count of items in the table after the filter has been applied                      |
 | `FILTER_STRING`       | The string used for the `ng-model` of the text filter                                                       |
-| `PER_PAGE_OPTIONS`    | The array of numbers for the verious page size options                                                      |
+| `PER_PAGE_OPTIONS`    | The array of numbers for the various page size options                                                      |
 | `ITEMS_PER_PAGE`      | The number for the selected number of items to display per page (the selected item from `PER_PAGE_OPTIONS`) |
 | `CURRENT_PAGE_NUMBER` | The number for the page that is currently being viewed                                                      |
 | `CURRENT_PAGE_RANGE`  | The number for the current viewable range of pages                                                          |
@@ -202,6 +202,22 @@ Only the templates above are required to use these features, but other options a
 |`itemNamePlural`    |`string`           |`itemNameSingular + "s"`|The default plural version of the name for the items being iterated over. This just appends `"s"` to the singular name, which should work for most words in English. _(This can be overridden per-table)_|
 |`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
 
+###Item Names
+
+The name of the things listed in the table can be displayed in the filtering and pagination templates. They are named "items" collectively and "item" individually by default, but this can be customized in the global config, and per-table to be more specific as to what is being listed.
+
+On a table just set the `ts-item-name` attribute on the same element as `ts-wrapper`. Set this as the singular version of the word, not the plural.
+ 
+ ```html
+<table ts-wrapper ts-item-name="product">
+```
+
+By default `"s"` will be added to the end of the singular version of that word to make the plural version. The above example would produce `"product"` and `"products"` This should be fine for many words in English, but in the rare instances where it does not a `ts-item-name-plural` attribute may also be specified.
+
+```html
+<table ts-wrapper ts-item-name="knife" ts-item-name-plural="knives">
+```
+
 ###Table Filtering & Pagination Usage
 
 To mark a column as filterable, add the `ts-filter` attribute to the `<th>` element.  The property specified in the `ts-criteria` attribute will be used to filter.
@@ -216,18 +232,18 @@ To mark a column as filterable, add the `ts-filter` attribute to the `<th>` elem
   </tr>
 </thead>
 ```
-**NOTE** that the `ts-filter` attribute is not needed if custom filtering using the `ts-filter-function` attribute is used.
+**NOTE** that the `ts-filter` attribute is not needed if custom filtering using the `ts-filter-function` attribute.
 
 ####Certain options can be overridden or disabled on a per-table basis.
 
-Set the `ts-per-page-options` attribute on the same element that `tw-wrapper` is set on to override the options for the number of items avialable per page.
-Set the `ts-per-page-default` attribute on the same element that `tw-wrapper` is set on to override the default number of items avaialable per page.
+Set the `ts-per-page-options` attribute on the same element that `tw-wrapper` is set on to override the options for the number of items available per page.
+Set the `ts-per-page-default` attribute on the same element that `tw-wrapper` is set on to override the default number of items available per page.
   
  ```html
 <table ts-wrapper ts-per-page-options="[5, 10, 15, 30]" ts-per-page-default="15">
 ```
 
-If filtering or pagination is configured globally, but you wish to disable either of these features per table you can set `ts-display-filtering="false"` and/or `ts-display-pagination="false"` on the same element as `ts-wrapper`
+If filtering or pagination has been configured globally, but you wish to disable either of these features per table you can set `ts-display-filtering="false"` and/or `ts-display-pagination="false"` on the same element as `ts-wrapper`
 
  ```html
 <table ts-wrapper ts-display-filtering="false" ts-display-pagination="false">
