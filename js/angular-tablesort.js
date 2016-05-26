@@ -289,20 +289,32 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-
+            
+            var $filterHtml;
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== ""){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
-                var $filter = $compile(filterString)($scope);
+                $filterHtml = $compile(filterString)($scope);
                 //Add filtering HTML BEFORE the table
-                $element.parent()[0].insertBefore($filter[0], $element[0]);
+                $element.parent()[0].insertBefore($filterHtml[0], $element[0]);
             }
-
+            
+            var $paginationHtml;
             if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
-                var pagerString = replaceTemplateTokens($scope, $scope.pagination.template)
-                var $pager = $compile(pagerString)($scope);
+                var pagerString = replaceTemplateTokens($scope, $scope.pagination.template);
+                $paginationHtml = $compile(pagerString)($scope);
                 //Add pagination HTML AFTER the table
-                $element.after($pager);
+                $element.after($paginationHtml);
             }
+            
+            $scope.$on("$destroy", function(){
+                //When the directive is destroyed, also remove the filter & pagination HTML
+                if($filterHtml){
+                    $filterHtml.remove();
+                }
+                if($paginationHtml){
+                    $paginationHtml.remove();
+                }
+            });
         }
     };
 }]);
@@ -366,7 +378,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
             
             //Limit Sort the results, then limit them to only include what matches the filter, then only what's on the current page
-            if (repeatExpr.search(/tablesort/) != -1) {
+            if (repeatExpr.search(/tablesort/) !== -1) {
                 repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun");
             } else {
                 repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun$3");
@@ -384,7 +396,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
 
             //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions 
-            tsWrapperCtrl.setDataForPager(repeatInMatch[2])
+            tsWrapperCtrl.setDataForPager(repeatInMatch[2]);
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
             $compile(element, null, 1000000)(scope);
