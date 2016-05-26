@@ -19,8 +19,10 @@ tableSortModule.provider('tableSortConfig', function () {
     if(!isNaN(this.perPageDefault) && this.perPageOptions.indexOf(this.perPageDefault) === -1){
         //If a default per-page option was added that isn't in the array, add it and sort the array 
         this.perPageOptions.push(this.perPageDefault);
-        this.perPageOptions.sort(function (a,b) {return a - b;}); 
     }
+    
+    //Sort the array
+    this.perPageOptions.sort(function (a,b) {return a - b;});
     
     this.$get = function () {
         return this;
