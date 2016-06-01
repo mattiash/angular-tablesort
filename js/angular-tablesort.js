@@ -196,23 +196,40 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                 }
             }
+            
+            var filteringEnabled = $attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0;
+            var $filterHtml;
+            if(filteringEnabled){
+                var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
+                $filterHtml = $compile(filterString)($scope);
+                //Add filtering HTML BEFORE the table
+                $element.parent()[0].insertBefore($filterHtml[0], $element[0]);
 
-            if($attrs.tsFilterFunction){
-                //if the table attributes has a filter function on it, this takes priority
-                $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
+                if($attrs.tsFilterFunction){
+                    //if the table attributes has a filter function on it, this takes priority
+                    $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
+                }
             }
-
+            
             if(!angular.isFunction($scope.filtering.filterFunction)) {
-                //if no custom filter function was used in the config, use this as the default one
-                $scope.filtering.filterFunction = function(item){
-                    var shouldInclude = false;
-                    for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
-                        if(!shouldInclude){
-                            var str = ($scope.filtering.filterFields[i][0](item) || "").toString(); //parse the item's property using the `ts-criteria` value & filter
-                            shouldInclude = str.indexOf($scope.filtering.filterString.toLowerCase()) > -1;
+                //No custom filter was provided...
+                if($scope.filtering.filterFields.length===0){
+                    //There are no filter fields, so always return everything
+                    $scope.filtering.filterFunction = function(item){
+                        return true;
+                    };
+                }else{
+                    //This is the default filter function. It does a lowercase string match
+                    $scope.filtering.filterFunction = function(item){
+                        var shouldInclude = false;
+                        for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
+                            if(!shouldInclude){
+                                var str = ($scope.filtering.filterFields[i][0](item) || "").toString().toLowerCase(); //parse the item's property using the `ts-criteria` value & filter
+                                shouldInclude = str.indexOf($scope.filtering.filterString.toLowerCase()) > -1;
+                            }
                         }
+                        return shouldInclude;
                     }
-                    return shouldInclude;
                 }
             }
 
@@ -289,14 +306,6 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-            
-            var $filterHtml;
-            if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== ""){
-                var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
-                $filterHtml = $compile(filterString)($scope);
-                //Add filtering HTML BEFORE the table
-                $element.parent()[0].insertBefore($filterHtml[0], $element[0]);
-            }
             
             var $paginationHtml;
             if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
