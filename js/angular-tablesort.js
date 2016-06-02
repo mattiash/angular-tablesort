@@ -197,21 +197,20 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
             }
             
-            var filteringEnabled = $attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0;
             var $filterHtml;
-            if(filteringEnabled){
+            if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
                 $filterHtml = $compile(filterString)($scope);
                 //Add filtering HTML BEFORE the table
                 $element.parent()[0].insertBefore($filterHtml[0], $element[0]);
-
-                if($attrs.tsFilterFunction){
-                    //if the table attributes has a filter function on it, this takes priority
-                    $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
-                }
             }
             
-            if(!angular.isFunction($scope.filtering.filterFunction)) {
+            if($attrs.tsFilterFunction){
+                //if the table attributes has a filter function on it, this takes priority
+                $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
+            }
+            
+            if(!angular.isFunction($scope.filtering.filterFunction)){
                 //No custom filter was provided...
                 if($scope.filtering.filterFields.length===0){
                     //There are no filter fields, so always return everything
