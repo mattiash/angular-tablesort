@@ -137,7 +137,6 @@ Several options may be configured globally per-app.
 
 | Property           | Type              | Default                | Description |
 |--------------------|-------------------|------------------------|-------------|
-|`filterFields`      |`string`           |`""`                    |A comma separated string that contains the names of the properties to which the filter will be applied.  _(This can be overridden per-table)_|
 |`filterTemplate`    |`string`           |`""`                    |HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
 |`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
 |`itemNameSingular`  |`string`           |`"item"`                |The default singular version of the name for the items being iterated over. _(This can be overridden per-table)_|
