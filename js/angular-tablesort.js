@@ -196,6 +196,13 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                 }
             }
+			
+			if($attrs.tsFilterFields){
+				var filterFields = $attrs.tsFilterFields.split(",").filter(function(item){return item && item.trim() !== ""});
+				for( var i=0; i<filterFields.length; i=i+1 ){
+					tsWrapperCtrl.addFilterField(filterFields[i]);
+				}
+			}
             
             var $filterHtml;
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0){
