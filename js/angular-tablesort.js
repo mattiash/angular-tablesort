@@ -146,7 +146,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
 
             this.addFilterField = function( sortexpr, element ) {
                 var expr = parse_sortexpr( sortexpr );
-                $scope.filtering.filterFields.push( expr )
+                $scope.filtering.filterFields.push( expr );
             };
 
             this.setDataForPager = function( dataArrayExp ){
@@ -197,12 +197,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
             }
 			
-			if($attrs.tsFilterFields){
-				var filterFields = $attrs.tsFilterFields.split(",").filter(function(item){return item && item.trim() !== ""});
-				for( var i=0; i<filterFields.length; i=i+1 ){
-					tsWrapperCtrl.addFilterField(filterFields[i]);
-				}
-			}
+            if($attrs.tsFilterFields){
+                var filterFields = $attrs.tsFilterFields.split(",")
+                    .filter(function(item){
+                    	return item && item.trim() !== "";
+                    });
+                for( var i=0; i<filterFields.length; i=i+1 ){
+                    tsWrapperCtrl.addFilterField(filterFields[i]);
+                }
+            }
             
             var $filterHtml;
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0){
