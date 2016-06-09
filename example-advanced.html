@@ -218,7 +218,7 @@
              * ITEM_NAME_PLURAL    - The plural version of the name of the items being iterated over
              */
             
-            var filterString = "<div class='row'>"
+            var filterString = "<div class='row'>";
             filterString +=      "<div class='col-sm-4 col-md-3 col-sm-offset-8 col-md-offset-9'>";
             filterString +=        "<div class='form-group has-feedback'>";
             filterString +=          "<input type='search' class='form-control' placeholder='filter {{ITEM_NAME_PLURAL}}' ng-model='FILTER_STRING'/>";
@@ -228,14 +228,14 @@
             filterString +=    "</div>";
             tableSortConfigProvider.filterTemplate = filterString;
             
-            var pagerString = "<div class='text-right'>"
+            var pagerString = "<div class='text-right'>";
             pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} of ";
             pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
-            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} {{FILTERED_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}} (filtered from {{TOTAL_COUNT | number}})</span>"
-            pagerString +=      "</small>&nbsp;"
+            pagerString +=        "<span ng-if='FILTERED_COUNT !== TOTAL_COUNT'>{{FILTERED_COUNT | number}} {{FILTERED_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}} (filtered from {{TOTAL_COUNT | number}})</span>";
+            pagerString +=      "</small>&nbsp;";
             pagerString +=      "<uib-pagination style='vertical-align:top; margin-top:0;' ng-if='ITEMS_PER_PAGE < TOTAL_COUNT' ng-model='CURRENT_PAGE_NUMBER' total-items='FILTERED_COUNT' items-per-page='ITEMS_PER_PAGE' max-size='5' force-ellipses='true'></uib-pagination>";
-            pagerString +=      "&nbsp;"
-            pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>"
+            pagerString +=      "&nbsp;";
+            pagerString +=      "<div class='form-group' style='display:inline-block;'><select class='form-control' ng-model='ITEMS_PER_PAGE' ng-options='opt as (opt + \" per page\") for opt in PER_PAGE_OPTIONS'></select></div>";
             pagerString +=    "</div>";
             tableSortConfigProvider.paginationTemplate = pagerString;
         }
