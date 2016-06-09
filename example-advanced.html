@@ -140,6 +140,33 @@
                 </tr>
             </tbody>
         </table>
+
+        <hr />
+        
+        <h2>Custom table layout without a header</h2>
+        <table class="table table-striped" ts-wrapper ts-item-name="product" ts-filter-fields="Name">            
+            <tbody>
+                <tr ng-repeat="item in tableOneItems track by item.Id"
+                    ts-repeat>
+                    <td>
+                        <div>
+                            <label>Name</label> <input type="text" class="form-control" ng-model="item.Name" />
+                        </div>                        
+                    </td>
+                    <td>
+                        <div>
+                            <label>Id</label> {{item.Id}}
+                        </div>                        
+                        <div>
+                            <label>Price</label> {{item.Price | currency}}    
+                        </div>
+                        <div>
+                            <label>Qty</label> {{item.Quantity}}
+                        </div>                        
+                    </td>                    
+                </tr>
+            </tbody>
+        </table>
         
     </div>
 </div>

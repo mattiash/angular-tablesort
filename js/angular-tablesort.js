@@ -146,14 +146,14 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
 
             this.addFilterField = function( sortexpr, element ) {
                 var expr = parse_sortexpr( sortexpr );
-                $scope.filtering.filterFields.push( expr )
+                $scope.filtering.filterFields.push( expr );
             };
 
             this.setDataForPager = function( dataArrayExp ){
                 $scope.pagination.itemsArrayExpression = dataArrayExp;
             }
         }],
-        link: function($scope, $element, $attrs){
+        link: function($scope, $element, $attrs, tsWrapperCtrl){
             
             if($attrs.tsItemName){
                 var originalNoDataText = "No " + $scope.itemNamePlural;
@@ -194,6 +194,16 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                         $scope.pagination.perPageOptions.push($scope.pagination.perPage);
                         $scope.pagination.perPageOptions.sort(function (a,b) {return a - b;}); 
                     }
+                }
+            }
+			
+            if($attrs.tsFilterFields){
+                var filterFields = $attrs.tsFilterFields.split(",")
+                    .filter(function(item){
+                    	return item && item.trim() !== "";
+                    });
+                for( var i=0; i<filterFields.length; i=i+1 ){
+                    tsWrapperCtrl.addFilterField(filterFields[i]);
                 }
             }
             

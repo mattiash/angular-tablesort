@@ -229,7 +229,9 @@ Changing the item name will also update the "no data" display to be `"No " +  IT
 
 ###Table Filtering & Pagination Usage
 
-To mark a column as filterable, add the `ts-filter` attribute to the `<th>` element.  The property specified in the `ts-criteria` attribute will be used to filter.
+There are a couple of ways to mark a column as filterable.
+
+One approach is to add the `ts-filter` attribute to the `<th>` element.  The property specified in the `ts-criteria` attribute will be used to filter.
 
  ```html
 <thead>
@@ -242,6 +244,12 @@ To mark a column as filterable, add the `ts-filter` attribute to the `<th>` elem
 </thead>
 ```
 **NOTE** that the `ts-filter` attribute is not needed if custom filtering using the `ts-filter-function` attribute.
+
+Another approach is to add the `ts-filter-fields` attribute to the same element as the `ts-wrapper`.  This attribute takes a comma separated list of all the fields to which the filter should be applied.
+
+```html
+<table ts-wrapper ts-filter-fields="Name,Price,Quantity">
+```
 
 ####Customized Pagination Options
 
