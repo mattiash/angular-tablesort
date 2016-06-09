@@ -153,7 +153,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.pagination.itemsArrayExpression = dataArrayExp;
             }
         }],
-        link: function($scope, $element, $attrs){
+        link: function($scope, $element, $attrs, tsWrapperCtrl){
             
             if($attrs.tsItemName){
                 var originalNoDataText = "No " + $scope.itemNamePlural;
