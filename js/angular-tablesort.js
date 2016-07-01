@@ -1,7 +1,7 @@
 /*
- angular-tablesort v1.1.2
- (c) 2013-2015 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
- License: MIT
+angular-tablesort v1.1.2
+(c) 2013-2015 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
+License: MIT
 */
 
 var tableSortModule = angular.module( 'tableSort', [] );
@@ -151,7 +151,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 $scope.filtering.filterFields.push( expr );
             };
 
-            this.setDataForPager = function( dataArrayExp ){
+            this.setDataForPager = function( dataArrayExp ) {
                 $scope.pagination.itemsArrayExpression = dataArrayExp;
             };
         }],
@@ -198,11 +198,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     }
                 }
             }
-			
+
             if($attrs.tsFilterFields){
                 var filterFields = $attrs.tsFilterFields.split(",")
                     .filter(function(item){
-                    	return item && item.trim() !== "";
+                        return item && item.trim() !== "";
                     });
                 for( var i=0; i<filterFields.length; i=i+1 ){
                     tsWrapperCtrl.addFilterField(filterFields[i]);
@@ -231,7 +231,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     };
                 }else{
                     //This is the default filter function. It does a lowercase string match
-                    $scope.filtering.filterFunction = function(item){
+                    $scope.filtering.filterFunction = function(item) {
                         var shouldInclude = false;
                         for( var i=0; i<$scope.filtering.filterFields.length; i=i+1 ) {
                             if(!shouldInclude){
@@ -269,7 +269,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                         aval = "";
                     }
                     if( bval === undefined || bval === null ) {
-                       bval = "";
+                    bval = "";
                     }
                     descending = $scope.sortExpression[i][2];
                     if( aval > bval ) {
@@ -380,28 +380,31 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             var ngRepeatDirective = repeatAttrs[0];
             var tsRepeatDirective = "ts-repeat";
             for (var i = 0; i < repeatAttrs.length; i++) {
-                 if (angular.isDefined(element.attr(repeatAttrs[i]))) {
+                if (angular.isDefined(element.attr(repeatAttrs[i]))) {
                     ngRepeatDirective = repeatAttrs[i];
                     tsRepeatDirective = ngRepeatDirective.replace(/^(data-)?ng/, '$1ts');
                     break;
                 }
             }
 
+            var tsExpr = "tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun";
             var repeatExpr = element.attr(ngRepeatDirective);
-            var trackBy = null;
             var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
             var repeatInMatch = repeatExpr.match(repeatExprRegex);
-            if( trackByMatch ) {
-                trackBy = trackByMatch[1];
-                tsWrapperCtrl.setTrackBy(trackBy);
+            if (trackByMatch) {
+                tsWrapperCtrl.setTrackBy(trackByMatch[1]);
             }
-            
+
             //Limit Sort the results, then limit them to only include what matches the filter, then only what's on the current page
             if (repeatExpr.search(/tablesort/) !== -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun");
+                repeatExpr = repeatExpr.replace(/tablesort/, tsExpr);
+                if (trackByMatch) {
+                    //Move the "track by" statement to the end
+                    repeatExpr = repeatExpr.replace(trackByMatch[0], "") + trackByMatch[0];
+                }
             } else {
-                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun$3");
+                repeatExpr = repeatExpr.replace(repeatExprRegex, "$1 in $2 | " + tsExpr + "$3");
             }
 
             if (angular.isUndefined(attrs.tsHideNoData)) {
@@ -426,8 +429,8 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
 
 tableSortModule.filter( 'tablesortLimit', function(){
     return function(array, limitFun) {
-       if(!array) return;
-       return limitFun(array);
+    if(!array) return;
+    return limitFun(array);
     };
 } );
 
@@ -452,8 +455,8 @@ tableSortModule.filter( 'parseFloat', function(){
 } );
 
 tableSortModule.filter('parseDate', function () {
-	return function (input) {
-		var timestamp = Date.parse(input);
-		return isNaN(timestamp) ? null : timestamp;
-	};
+    return function (input) {
+        var timestamp = Date.parse(input);
+        return isNaN(timestamp) ? null : timestamp;
+    };
 } );
