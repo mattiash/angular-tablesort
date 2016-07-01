@@ -60,8 +60,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 getPageRangeString: function(total) {
                     //TODO: Format these numbers, perhaps optionally
                     var maxOnPage = total !== $scope.filtering.filteredCount ? $scope.filtering.filteredCount : total;
-                    var startPage = (($scope.pagination.currentPage-1) * $scope.pagination.perPage) + 1;
-                    var endPage = Math.min(($scope.pagination.currentPage) * $scope.pagination.perPage, maxOnPage);
+                    var startPage = ($scope.pagination.currentPage - 1) * ($scope.pagination.perPage + 1);
+                    var endPage = Math.min($scope.pagination.currentPage * $scope.pagination.perPage, maxOnPage);
                     return $scope.filtering.filteredCount === 0 ? "" : startPage + "-" + endPage;
                 }
             };
@@ -153,7 +153,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
 
             this.setDataForPager = function( dataArrayExp ){
                 $scope.pagination.itemsArrayExpression = dataArrayExp;
-            }
+            };
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl){
             
@@ -190,7 +190,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             if($attrs.tsPerPageDefault){
                 var defaultPerPage = $scope.$eval($attrs.tsPerPageDefault);
                 if(!isNaN(defaultPerPage)){
-                    $scope.pagination.perPage = defaultPerPage
+                    $scope.pagination.perPage = defaultPerPage;
                     if($scope.pagination.perPageOptions.indexOf($scope.pagination.perPage) === -1){
                         //If a default per-page option was added that isn't in the array, add it and sort the array 
                         $scope.pagination.perPageOptions.push($scope.pagination.perPage);
@@ -240,7 +240,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                             }
                         }
                         return shouldInclude;
-                    }
+                    };
                 }
             }
 
@@ -308,7 +308,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 //Only return the items that are in the correct index range for the currently selected page
                 var begin = ($scope.pagination.currentPage-1) * $scope.pagination.perPage;
-                var end = ($scope.pagination.currentPage) * $scope.pagination.perPage;
+                var end = $scope.pagination.currentPage * $scope.pagination.perPage;
                 var final=[];
                 for(var i=0; i < array.length; i++){
                     if(i >= begin && i < end){
@@ -357,7 +357,7 @@ tableSortModule.directive('tsCriteria', function() {
             element.addClass('tablesort-sortable');
             if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
-                if( attrs.tsDefault == "descending" ) {
+                if( attrs.tsDefault === "descending" ) {
                     tsWrapperCtrl.addSortField( attrs.tsCriteria, element );
                 }
             }
