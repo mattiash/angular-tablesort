@@ -10,12 +10,12 @@
 
 <div ng-app="myApp" class="container" ng-cloak>
     <div ng-controller="tableTestCtrl" >
-        
+
         <div class="alert alert-info">
             <h4><span class="glyphicon glyphicon-info-sign"></span> About Pagination</h4>
             <p>This demo page has examples that use the <a href="http://angular-ui.github.io/bootstrap/#/pagination" class="alert-link" target="_blank">Angular-UI Bootstrap pagination directive</a>, but really any pagination directive could be used here</p>
         </div>
-        
+
         <hr />
 
         <h2>With configured Filtering, Pagination, and Item Name</small></h2>
@@ -41,16 +41,16 @@
                 </tr>
             </tbody>
         </table>
-        
+
         <hr />
-        
+
         <h2>Custom Filtering UI, filter function, & "no data" message</small></h2>
         <div class="row">
             <div class="col-xs-6 col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-6">
                 <div class="form-group has-feedback">
                     <label for="cstm-filter-name" class="control-label">Name</label>
                     <input type="search" id="cstm-filter-name" class="form-control" ng-model="customNameFilter" />
-                    <span class='glyphicon glyphicon-search form-control-feedback' aria-hidden=true'></span>
+                    <span class='glyphicon glyphicon-search form-control-feedback' aria-hidden='true'></span>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-4 col-md-3">
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        
+
         <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-filter-function="customFilterFn" ts-no-data-text="Nothing to see here!">
             <thead>
                 <tr>
@@ -88,10 +88,10 @@
                 </tr>
             </tbody>
         </table>
-        
+
         <hr />
-        
-        <h2>Disabled filtering & paging</h2>
+
+        <h2>Disabled filtering &amp; paging</h2>
         <table class="table table-striped" ts-wrapper ts-display-filtering="false" ts-display-pagination="false">
             <thead>
                 <tr>
@@ -116,7 +116,7 @@
         </table>
 
         <hr />
-        
+
         <h2>Different per-page options</h2>
         <table class="table table-striped" ts-wrapper ts-per-page-options="customPerPageOptions" ts-per-page-default="customPerPageDefault">
             <thead>
@@ -142,32 +142,32 @@
         </table>
 
         <hr />
-        
+
         <h2>Custom table layout without a header</h2>
-        <table class="table table-striped" ts-wrapper ts-item-name="product" ts-filter-fields="Name">            
+        <table class="table table-striped" ts-wrapper ts-item-name="product" ts-filter-fields="Name">
             <tbody>
                 <tr ng-repeat="item in tableOneItems track by item.Id"
                     ts-repeat>
                     <td>
                         <div>
                             <label>Name</label> <input type="text" class="form-control" ng-model="item.Name" />
-                        </div>                        
+                        </div>
                     </td>
                     <td>
                         <div>
                             <label>Id</label> {{item.Id}}
-                        </div>                        
+                        </div>
                         <div>
-                            <label>Price</label> {{item.Price | currency}}    
+                            <label>Price</label> {{item.Price | currency}}
                         </div>
                         <div>
                             <label>Qty</label> {{item.Quantity}}
-                        </div>                        
-                    </td>                    
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
-        
+
     </div>
 </div>
 
@@ -196,7 +196,7 @@
         }
         return items;
     }
-    
+
     angular
         .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
@@ -205,17 +205,17 @@
             $scope.tableTwoItems = getFakeData(100);
             $scope.tableThreeItems = getFakeData(12);
             $scope.tableFourItems = getFakeData(100);
-            
+
             $scope.customPerPageOptions = [20,40,60];
             $scope.customPerPageDefault = 40;
-            
+
             //Custom filter stuff (tableTwoItems)
             $scope.customNameFilter = "";
             $scope.customPriceFilter = "";
             $scope.customFilterFn = function(item) {
                 var nameMatch = item.Name.toLowerCase().indexOf($scope.customNameFilter.toLowerCase()) > -1;
                 var priceMatch = true;
-                
+
                 if($scope.customPriceFilter==="under20"){
                     priceMatch = item.Price < 20;
                 }else if($scope.customPriceFilter==="20to50"){
@@ -223,7 +223,7 @@
                 } else if($scope.customPriceFilter==="over50"){
                     priceMatch = item.Price > 50;
                 }
-                
+
                 return nameMatch && priceMatch;
             };
         });
@@ -232,7 +232,7 @@
         .module('myApp')
         .config(['tableSortConfigProvider', function(tableSortConfigProvider){
             //Globally configured filtering & pagination templates
-            
+
             /* Template Tokens - all are replaced by Angular expressions
              * TOTAL_COUNT         - The number for the total count of items in the table
              * FILTERED_COUNT      - The number for the total count of items in the table after the filter has been applied
@@ -244,7 +244,7 @@
              * ITEM_NAME_SINGULAR  - The singular version of the name of the items being iterated over
              * ITEM_NAME_PLURAL    - The plural version of the name of the items being iterated over
              */
-            
+
             var filterString = "<div class='row'>";
             filterString +=      "<div class='col-sm-4 col-md-3 col-sm-offset-8 col-md-offset-9'>";
             filterString +=        "<div class='form-group has-feedback'>";
@@ -254,7 +254,7 @@
             filterString +=      "</div>";
             filterString +=    "</div>";
             tableSortConfigProvider.filterTemplate = filterString;
-            
+
             var pagerString = "<div class='text-right'>";
             pagerString += "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} {{FILTERED_COUNT === 0 ? '' : 'of'}} ";
             pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
