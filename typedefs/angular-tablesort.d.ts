@@ -1,6 +1,5 @@
 // Type definitions for Angular TableSort
 // Project: https://github.com/mattiash/angular-tablesort
-// Project Fork: https://github.com/chrismbarr/angular-tablesort
 // Definitions by: AppRiver, LLC
 
 declare namespace angular.tablesort {
@@ -52,6 +51,6 @@ declare namespace angular.tablesort {
          * @default "No {{itemNamePlural}}"
          */
         noDataText: string;
-        
+
     }
 }

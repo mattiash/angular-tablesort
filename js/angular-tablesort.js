@@ -1,6 +1,6 @@
 /*
-angular-tablesort v1.1.2
-(c) 2013-2015 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
+angular-tablesort v1.2.0
+(c) 2013-2016 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
 License: MIT
 */
 
@@ -15,15 +15,15 @@ tableSortModule.provider('tableSortConfig', function () {
     this.itemNameSingular = "item";
     this.itemNamePlural = this.itemNameSingular + "s";
     this.noDataText = "No " + this.itemNamePlural;
-    
+
     if(!isNaN(this.perPageDefault) && this.perPageOptions.indexOf(this.perPageDefault) === -1){
-        //If a default per-page option was added that isn't in the array, add it and sort the array 
+        //If a default per-page option was added that isn't in the array, add it and sort the array
         this.perPageOptions.push(this.perPageDefault);
     }
-    
+
     //Sort the array
     this.perPageOptions.sort(function (a,b) {return a - b;});
-    
+
     this.$get = function () {
         return this;
     };
@@ -32,7 +32,7 @@ tableSortModule.provider('tableSortConfig', function () {
 
 tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, $compile ) {
     'use strict';
-    
+
     function replaceTemplateTokens($scope, templateString){
         //Replace some strings with the proper expressions to be compiled
         return templateString
@@ -46,7 +46,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             .replace(/FILTERED_COUNT/g, "filtering.filteredCount")
             .replace(/CURRENT_PAGE_NUMBER/g, "pagination.currentPage");
     }
-    
+
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig ) {
@@ -73,13 +73,13 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 filteredCount: 0,
                 filterFields: []
             };
-            
+
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
             $scope.noDataText = tableSortConfig.noDataText;
             $scope.sortExpression = [];
             $scope.headings = [];
-            
+
             //Private vars
             var parse_sortexpr = function( expr ) {
                 return [$parse( expr ), null, false];
@@ -156,7 +156,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl){
-            
+
             if($attrs.tsItemName){
                 var originalNoDataText = "No " + $scope.itemNamePlural;
 
@@ -192,9 +192,9 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 if(!isNaN(defaultPerPage)){
                     $scope.pagination.perPage = defaultPerPage;
                     if($scope.pagination.perPageOptions.indexOf($scope.pagination.perPage) === -1){
-                        //If a default per-page option was added that isn't in the array, add it and sort the array 
+                        //If a default per-page option was added that isn't in the array, add it and sort the array
                         $scope.pagination.perPageOptions.push($scope.pagination.perPage);
-                        $scope.pagination.perPageOptions.sort(function (a,b) {return a - b;}); 
+                        $scope.pagination.perPageOptions.sort(function (a,b) {return a - b;});
                     }
                 }
             }
@@ -208,7 +208,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     tsWrapperCtrl.addFilterField(filterFields[i]);
                 }
             }
-            
+
             var $filterHtml;
             if($attrs.tsDisplayFiltering !== "false" && $scope.filtering.template !== "" && $scope.filtering.filterFields.length>0){
                 var filterString = replaceTemplateTokens($scope, $scope.filtering.template);
@@ -216,12 +216,12 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 //Add filtering HTML BEFORE the table
                 $element.parent()[0].insertBefore($filterHtml[0], $element[0]);
             }
-            
+
             if($attrs.tsFilterFunction){
                 //if the table attributes has a filter function on it, this takes priority
                 $scope.filtering.filterFunction = $scope.$eval($attrs.tsFilterFunction);
             }
-            
+
             if(!angular.isFunction($scope.filtering.filterFunction)){
                 //No custom filter was provided...
                 if($scope.filtering.filterFields.length===0){
@@ -317,7 +317,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
                 return final;
             };
-            
+
             var $paginationHtml;
             if($attrs.tsDisplayPagination !== "false" && $scope.pagination.template !== ""){
                 var pagerString = replaceTemplateTokens($scope, $scope.pagination.template);
@@ -325,7 +325,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 //Add pagination HTML AFTER the table
                 $element.after($paginationHtml);
             }
-            
+
             $scope.$on("$destroy", function(){
                 //When the directive is destroyed, also remove the filter & pagination HTML
                 if($filterHtml){
@@ -418,7 +418,7 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
                 element.parent().prepend(noDataRow);
             }
 
-            //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions 
+            //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions
             tsWrapperCtrl.setDataForPager(repeatInMatch[2]);
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
