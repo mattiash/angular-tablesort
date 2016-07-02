@@ -140,6 +140,28 @@
                 </tr>
             </tbody>
         </table>
+        <hr />
+
+        <h2>With special event names and no pagination (see console for events)</small></h2>
+        <table class="table table-striped" ts-wrapper>
+            <thead>
+                <tr>
+                    <th ts-criteria="Id" ts-name="id">Id</th>
+                    <th ts-criteria="Name|lowercase" ts-name="name" ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-name="price">Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-name="quantity">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in tableFiveItems track by item.Id"
+                    ts-repeat>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
+                </tr>
+            </tbody>
+        </table>
 
         <hr />
 
@@ -200,11 +222,15 @@
     angular
         .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
+          $scope.$on('tablesort:sortOrder', (event, sortOrder) => {
+            console.log('tablesort:sortOrder event', sortOrder);
+          });
             //Generate some fake data
             $scope.tableOneItems = getFakeData(10000);
             $scope.tableTwoItems = getFakeData(100);
             $scope.tableThreeItems = getFakeData(12);
             $scope.tableFourItems = getFakeData(100);
+            $scope.tableFiveItems = getFakeData(20);
 
             $scope.customPerPageOptions = [20,40,60];
             $scope.customPerPageDefault = 40;
