@@ -302,8 +302,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
 
             $scope.pageLimitFun = function(array){
-                if($attrs.tsDisplayPagination === "false"){
-                    //pagination is disabled, so return everything
+                if($attrs.tsDisplayPagination === "false" || $scope.pagination.template === "") {
+                    //pagination is disabled on this table or there is no template, so return everything
                     return array;
                 }
                 //Only return the items that are in the correct index range for the currently selected page
