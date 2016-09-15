@@ -383,7 +383,7 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
+tableSortModule.directive("tsRepeat", ['$compile', '$interpolate' function($compile, $interpolate) {
     return {
         terminal: true,
         multiElement: true,
@@ -422,12 +422,15 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
 
             if (angular.isUndefined(attrs.tsHideNoData)) {
+                var startSym = $interpolate.startSymbol();
+                var endSym = $interpolate.endSymbol();
+
                 var noDataRow = angular.element(element[0]).clone();
                 noDataRow.removeAttr(ngRepeatDirective);
                 noDataRow.removeAttr(tsRepeatDirective);
                 noDataRow.addClass("showIfLast");
                 noDataRow.children().remove();
-                noDataRow.append('<td colspan="' + element[0].childElementCount + '">{{noDataText}}</td>');
+                noDataRow.append('<td colspan="' + element[0].childElementCount + '">' + startSym + 'noDataText' + endSym + '</td>');
                 noDataRow = $compile(noDataRow)(scope);
                 element.parent().prepend(noDataRow);
             }
