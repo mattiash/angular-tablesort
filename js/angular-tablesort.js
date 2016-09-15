@@ -383,7 +383,7 @@ tableSortModule.directive('tsCriteria', function() {
     };
 });
 
-tableSortModule.directive("tsRepeat", ['$compile', '$interpolate' function($compile, $interpolate) {
+tableSortModule.directive("tsRepeat", ['$compile', '$interpolate', function($compile, $interpolate) {
     return {
         terminal: true,
         multiElement: true,
