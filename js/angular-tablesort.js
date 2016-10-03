@@ -271,7 +271,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 return filteredArr;
             };
 
-            function defaultSort(a, b) {
+            function defaultSort( a, b ) {
               if (a > b) {
                 return 1;
               } else if (a === b) {
