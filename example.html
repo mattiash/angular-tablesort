@@ -161,7 +161,7 @@
                 $scope.items = [];
                 for(var i = 0; i<10; i++){
                     var idStr = (i < 10 ? "0" + i : i).toString();
-                    var nameStr = String.fromCharCode(65 + i) + String.fromCharCode(80 - i); //gets alphabet chars
+                    var nameStr = String.fromCharCode(65 + i); //gets alphabet chars
                     var priceStr = (Math.random()*100).toFixed(2);
                     var qty = Math.floor(Math.random() * (25 - 1 + 1) + 1);
                     $scope.items.push({
