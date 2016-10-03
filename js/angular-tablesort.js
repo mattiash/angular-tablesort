@@ -84,9 +84,10 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 return [$parse( expr ), null, false, name ? name : expr];
             };
 
-            this.setSortField = function( sortexpr, element, name ) {
+            this.setSortField = function( sortexpr, element, name, sortBy ) {
                 var i;
                 var expr = parse_sortexpr( sortexpr, name );
+                expr.push(sortBy);
                 if( $scope.sortExpression.length === 1
                     && $scope.sortExpression[0][0] === expr[0] ) {
                     if( $scope.sortExpression[0][2] ) {
@@ -119,10 +120,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 }
             };
 
-            this.addSortField = function( sortexpr, element, name ) {
+            this.addSortField = function( sortexpr, element, name, sortBy ) {
                 var i;
                 var toggle_order = false;
                 var expr = parse_sortexpr( sortexpr, name );
+                expr.push(sortBy);
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
                     if( $scope.sortExpression[i][0] === expr[0] ) {
                         if( $scope.sortExpression[i][2] ) {
@@ -269,8 +271,18 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                 return filteredArr;
             };
 
+            function defaultSort(a, b) {
+              if (a > b) {
+                return 1;
+              } else if (a === b) {
+                return 0;
+              } else {
+                return -1;
+              }
+            }
+
             $scope.sortFun = function( a, b ) {
-                var i, aval, bval, descending, filterFun;
+                var i, aval, bval, descending, filterFun, sortBy;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
@@ -286,10 +298,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     bval = "";
                     }
                     descending = $scope.sortExpression[i][2];
-                    if( aval > bval ) {
+                    sortBy = $scope.sortExpression[i][4] || defaultSort;
+                    if( sortBy(aval, bval) === 1 ) {
                         return descending ? -1 : 1;
                     }
-                    else if( aval < bval ) {
+                    else if( sortBy(aval, bval) === -1 ) {
                         return descending ? 1 : -1;
                     }
                 }
@@ -356,23 +369,26 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
 tableSortModule.directive('tsCriteria', function() {
     return {
         require: "^tsWrapper",
+        scope: {
+          tsOrderBy: '='
+        },
         link: function(scope, element, attrs, tsWrapperCtrl) {
             var clickingCallback = function(event) {
                 scope.$apply( function() {
                     if( event.shiftKey ) {
-                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element, attrs.tsName);
+                        tsWrapperCtrl.addSortField(attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy);
                     }
                     else {
-                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName);
+                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy);
                     }
                 } );
             };
             element.bind('click', clickingCallback);
             element.addClass('tablesort-sortable');
             if( "tsDefault" in attrs && attrs.tsDefault !== "0" ) {
-                tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
+                tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
                 if( attrs.tsDefault === "descending" ) {
-                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName );
+                    tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
                 }
             }
             if( "tsFilter" in attrs) {
