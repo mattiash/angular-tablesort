@@ -84,6 +84,28 @@
             </tbody>
         </table>
 
+        <h1>Angular Tablesort with a custom sort function on the Price column</h1>
+        <table class="table table-striped" ts-wrapper>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th ts-criteria="Id">Id</th>
+                <th ts-criteria="Name|lowercase">Name</th>
+                <th ts-criteria="Price|parseFloat" ts-default ts-order-by="centsThenDollars">Price</th>
+                <th ts-criteria="Quantity|parseInt">Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in items track by item.Id" ts-repeat>
+                <td><input type="checkbox"></td>
+                <td>{{item.Id}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Price | currency}}</td>
+                <td>{{item.Quantity}}</td>
+            </tr>
+            </tbody>
+        </table>
+
         <h1>Empty table</h1>
         <table class="table table-striped" ts-wrapper>
             <thead>
@@ -127,7 +149,7 @@
             </tr>
             </tbody>
         </table>
-        
+
     </div>
 </div>
 
@@ -151,11 +173,31 @@
                         selected: false
                     });
                 }
-                
+
                 $scope.noitems = [];
 
                 $scope.clickRow = function () {
                     alert('You clicked the row.');
+                }
+
+                function swapBeforeAndAfterDecimal(number) {
+                  var beforeDecimal = Math.floor(number).toString();
+                  var afterDecimal = number.toString().replace(/.*\./, '');
+
+                  return afterDecimal + '.' + beforeDecimal;
+                }
+
+                $scope.centsThenDollars = function (a, b) {
+                  var aSwapped = swapBeforeAndAfterDecimal(a);
+                  var bSwapped = swapBeforeAndAfterDecimal(b);
+
+                  if (aSwapped > bSwapped) {
+                    return 1;
+                  } else if (aSwapped === bSwapped) {
+                    return 0;
+                  } else {
+                    return -1;
+                  }
                 }
             }
     );
