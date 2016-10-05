@@ -10,11 +10,11 @@ Background
 
 When you use jquery to build your web-pages, it is very easy to add sorting functionality to your tables - include [tablesorter](http://tablesorter.com) and annotate your column headings slightly to tell it what type of data your table contains.
 
-The goal with this module is to make it just as easy to add sorting to AngularJS tables, but with proper use of angular features and not jquery.
+The goal with this module is to make it just as easy to add sorting to AngularJS tables, but with proper use of angular features and not jQuery.
 
 Click once on a heading to sort ascending, twice for descending. Use shift-click to sort on more than one column.
 
-Additionally, these directives also makes it easy to add a default row that is shown in empty tables to make
+Additionally, these directives also make it easy to add a default row that is shown in empty tables to make
 it explicit that the table is intentionally empty and not just broken.
 
 Installation
@@ -52,13 +52,16 @@ The following code generates a table that can be sorted by clicking on the table
       <th ts-criteria="Name|lowercase" ts-default>Name</th>
       <th ts-criteria="Price|parseFloat">Price</th>
       <th ts-criteria="Quantity|parseInt">Quantity</th>
+      <th ts-criteria="OrderDate|parseDate">Date Ordered</th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="item in items" ts-repeat>
+      <td>#{{item.Id}}</td>
       <td>{{item.Name}}</td>
       <td>{{item.Price | currency}}</td>
       <td>{{item.Quantity}}</td>
+      <td>{{item.OrderDate | date:"medium"}}</td>
     </tr>
   </tbody>
 </table>
@@ -66,7 +69,7 @@ The following code generates a table that can be sorted by clicking on the table
 
 The `ts-wrapper` attribute must be set on element that surrounds both the headings and the ng-repeat statement.
 
-The `ts-criteria` attribute tells tablesort which expression it should sort on when that element is clicked. Normally, the ts-criteria is the same as the expression that is shown in the column, but it doesn't have to be. The ts-criteria can also be filtered using the normal AngularJS filter syntax. Tablesort includes two filters parseInt and parseFloat that use the javascript functions of the same name, but any filter can be used.
+The `ts-criteria` attribute tells tablesort which expression it should sort on when that element is clicked. Normally, the ts-criteria is the same as the expression that is shown in the column, but it doesn't have to be. The ts-criteria can also be filtered using the normal AngularJS filter syntax. Tablesort includes three filters `parseInt`, `parseFloat`, and `parseDate`, but any filter can be used.
 
 The `ts-name` attribute can be set to declare a unique name for an expression which will be used in the event fired when sorting has changed.
 
@@ -134,7 +137,7 @@ All table headings that can be sorted on is styled with css-class `tablesort-sor
 Empty Tables
 ---
 
-By default the content for the empty table cell is set to `"No Items"`, however it can be changed via the `noDataText` configuration option (see below). It is inserted as one `<td>` spanning
+By default, the content for the empty table cell is set to `"No Items"`, however it can be changed via the `noDataText` configuration option (see below). It is inserted as one `<td>` spanning
 all columns and placed inside a `<tr class="showIfLast">`, which is placed at the top of each table.
 
 The message can be customized for each table by specifying the `ts-no-data-text` attribute on the same element as the `ts-wrapper`. 
@@ -142,7 +145,7 @@ The message can be customized for each table by specifying the `ts-no-data-text`
 <table ts-wrapper ts-no-data-text="Nothing to see here...">
 ```
 
-To disable this feature add the attribute `ts-hide-no-data` to the `ts-repeat` row:
+To disable this feature, add the attribute `ts-hide-no-data` to the `ts-repeat` row:
 ```html
 <tr ng-repeat="item in items" ts-repeat ts-hide-no-data>
 ```
@@ -162,7 +165,7 @@ Several options may be configured globally per-app.
 |`noDataText`        |`string`           |`"No " + itemNamePlural`|The text that displays in the `.showIfLast` cell shown when a table is empty|
 |`paginationTemplate`|`string`           |`""`                    |HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
 |`perPageOptions`    |`array` of `number`|`[10, 25, 50, 100]`     |The options for how many items to show on each page of results.  _(This can be overridden per-table)_|
-|`perPageDefault`    |`number`           |`perPageOptions[0]`     |The default number of items for show on each page of results. By default it picks the first item in the `perPageOptions` array.  _(This can be overridden per-table)_|
+|`perPageDefault`    |`number`           |`perPageOptions[0]`     |The default number of items for show on each page of results. By default, it picks the first item in the `perPageOptions` array.  _(This can be overridden per-table)_|
 
 Here's an example of how to change an option
 ```js
@@ -176,7 +179,7 @@ angular
 
 ###Filtering & Pagination Templates
 
-By default table filtering & pagination are supported, but not enabled so that you may use any UI and any 3rd party angular code to do these types of things.
+By default, table filtering & pagination are supported, but not enabled so that you may use any UI and any 3rd party angular code to do these types of things.
 
 To set up these features, you must provide some configuration HTML string templates.  These will be the default templates for filtering & pagination for all tables use in the same app unless that feature is specifically disabled on a per-table basis.
 
@@ -240,7 +243,7 @@ On a table just set the `ts-item-name` attribute on the same element as `ts-wrap
 The plural version of the word will be automatically generated by adding `"s"` to the end of the singular word. The above example would produce `"product"` and `"products"` This should be fine for many words in English, but in the rare instances where it is not, a `ts-item-name-plural` attribute may also be specified.
 
 ```html
-<table ts-wrapper ts-item-name="knife" ts-item-name-plural="knives">
+<table ts-wrapper ts-item-name="person" ts-item-name-plural="people">
 ```
 
 Changing the item name will also update the "no data" display to be `"No " +  ITEM_NAME_PLURAL` _unless_ the globally configured `noDataText` option is in a format other than the default.
@@ -258,6 +261,7 @@ One approach is to add the `ts-filter` attribute to the `<th>` element.  The pro
     <th ts-criteria="Name|lowercase" ts-default ts-filter>Name</th>
     <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
     <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+    <th ts-criteria="OrderDate|parseDate" ts-filter>Date Ordered</th>
   </tr>
 </thead>
 ```
@@ -266,14 +270,14 @@ One approach is to add the `ts-filter` attribute to the `<th>` element.  The pro
 Another approach is to add the `ts-filter-fields` attribute to the same element as the `ts-wrapper`.  This attribute takes a comma separated list of all the fields to which the filter should be applied.
 
 ```html
-<table ts-wrapper ts-filter-fields="Name,Price,Quantity">
+<table ts-wrapper ts-filter-fields="Id,Name,Price,Quantity,OrderDate">
 ```
 
 ####Customized Pagination Options
 
-Set the `ts-per-page-options` attribute on the same element that `tw-wrapper` is set on to override the options for the number of items available per page.
+Set the `ts-per-page-options` attribute on the same element that `ts-wrapper` is set on to override the options for the number of items available per page.
 
-Set the `ts-per-page-default` attribute on the same element that `tw-wrapper` is set on to override the default number of items available per page.
+Set the `ts-per-page-default` attribute on the same element that `ts-wrapper` is set on to override the default number of items available per page.
   
  ```html
 <table ts-wrapper ts-per-page-options="[5, 10, 15, 30]" ts-per-page-default="15">
