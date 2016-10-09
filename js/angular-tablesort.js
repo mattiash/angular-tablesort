@@ -270,7 +270,8 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             };
 
             $scope.sortFun = function( a, b ) {
-                var i, aval, bval, descending, filterFun;
+                var i, aval, bval, descending, filterFun, compResult;
+                var collator = new Intl.Collator('co', {sensitivity: 'case'});
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
@@ -286,10 +287,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     bval = "";
                     }
                     descending = $scope.sortExpression[i][2];
-                    if( aval > bval ) {
+                    compResult = collator.compare(aval, bval);
+                    if( compResult === 1 ) {
                         return descending ? -1 : 1;
                     }
-                    else if( aval < bval ) {
+                    else if( compResult === -1 ) {
                         return descending ? 1 : -1;
                     }
                 }
@@ -305,10 +307,11 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                     if( bval === undefined || bval === null ) {
                         bval = "";
                     }
-                    if( aval > bval ) {
+                    compResult = collator.compare(aval, bval);
+                    if( compResult === 1 ) {
                         return descending ? -1 : 1;
                     }
-                    else if( aval < bval ) {
+                    else if( compResult === -1 ) {
                         return descending ? 1 : -1;
                     }
                 }
