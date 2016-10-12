@@ -273,7 +273,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun, compResult;
-                var collator = new Intl.Collator('co', {sensitivity: 'case'});
+                var collator = new Intl.Collator(undefined, {sensitivity: 'case'});
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
