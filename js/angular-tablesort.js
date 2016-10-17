@@ -274,6 +274,7 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun, compResult;
                 var collator = new Intl.Collator(undefined, {sensitivity: 'case'});
+                var numericCollator = new Intl.Collator(undefined, {numeric: true});
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ){
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
@@ -286,10 +287,15 @@ tableSortModule.directive('tsWrapper', ['$parse', '$compile', function( $parse, 
                         aval = "";
                     }
                     if( bval === undefined || bval === null ) {
-                    bval = "";
+                        bval = "";
                     }
                     descending = $scope.sortExpression[i][2];
-                    compResult = collator.compare(aval, bval);
+                    if(typeof aval == 'number' && typeof bval == 'number') {
+		                compResult = numericCollator.compare(aval, bval);
+	                }
+	                else {
+                        compResult = collator.compare(aval, bval);
+	                }
                     if( compResult === 1 ) {
                         return descending ? -1 : 1;
                     }
