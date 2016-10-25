@@ -38,7 +38,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         return templateString
             .replace(/FILTER_STRING/g, 'filtering.filterString')
             .replace(/CURRENT_PAGE_RANGE/g, 'pagination.getPageRangeString(TOTAL_COUNT)')
-            .replace(/TOTAL_COUNT/g, $scope.pagination.itemsArrayExpression + '.length')
+            .replace(/TOTAL_COUNT/g, $scope.itemsArrayExpression + '.length')
             .replace(/PER_PAGE_OPTIONS/g, 'pagination.perPageOptions')
             .replace(/ITEMS_PER_PAGE/g, 'pagination.perPage')
             .replace(/ITEM_NAME_SINGULAR/g, 'itemNameSingular')
@@ -55,7 +55,6 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 template: tableSortConfig.paginationTemplate,
                 perPageOptions: tableSortConfig.perPageOptions.concat(), //copy the array, not a reference
                 perPage: tableSortConfig.perPageDefault,
-                itemsArrayExpression: '', //this will contain the string expression for the array of items in the table
                 currentPage: 1,
                 getPageRangeString: function(total) {
                     //TODO: Format these numbers, perhaps optionally
@@ -76,6 +75,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 filterFields: []
             };
 
+            $scope.itemsArrayExpression = ''; //this will contain the string expression for the array of items in the table
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
             $scope.noDataText = tableSortConfig.noDataText;
@@ -163,8 +163,8 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 $scope.filtering.filterFields.push( expr );
             };
 
-            this.setDataForPager = function( dataArrayExp ) {
-                $scope.pagination.itemsArrayExpression = dataArrayExp;
+            this.setArrayExpr = function( dataArrayExp ) {
+                $scope.itemsArrayExpression = dataArrayExp;
             };
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl) {
@@ -434,7 +434,7 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
             }
 
             //pass the `itemsList` from `item in itemsList` to the master directive as a string so it can be used in expressions
-            tsWrapperCtrl.setDataForPager(repeatInMatch[2]);
+            tsWrapperCtrl.setArrayExpr(repeatInMatch[2]);
 
             angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
             $compile(element, null, 1000000)(scope);
