@@ -2,8 +2,13 @@
 // Project: https://github.com/mattiash/angular-tablesort
 // Definitions by: AppRiver, LLC
 
+declare module 'angular-tablesort' {
+    export type ITableSortConfigProvider = angular.tablesort.ITableSortConfigProvider;
+    export type ITableSortGetDataFunc<T> = angular.tablesort.ITableSortGetDataFunc<T>;
+}
+
 declare namespace angular.tablesort {
-    interface ITableSortConfigProvider {
+    export interface ITableSortConfigProvider {
         /**
          * @description Provide the default function for filtering down items when models change
          * @default A lowercase string match for values defined by the ts-criteria attributes with ts-filter also on them
@@ -53,4 +58,13 @@ declare namespace angular.tablesort {
         noDataText: string;
 
     }
+
+    /**
+     * @description Return an array of items currently displayed in the table. Pass in parameters to sort and filter the returned data as needed.
+     * @param {boolean} shouldApplySorting - When  true the data will come back in the same sort order as the table is currently displaying.  When false the data will come back in the original sort order (pre-tablesort) 
+     * @param {boolean} shouldApplyFiltering - When true the data will only include items that match the current filters, which will match the current table display.  When false all items in the table are included regarless of what is currently being filtered.
+     * @param {boolean} limitToCurrentPageOnly - When true and pagination is enabled, the data will only return the currently viewed page of data. When false data from all pages will be returned.
+     * @returns {any[]} an array of items that are currently displayed in the table
+     */
+    export type ITableSortGetDataFunc<T> = (shouldApplySorting?: boolean, shouldApplyFiltering?: boolean, limitToCurrentPageOnly?: boolean) => T[];
 }
