@@ -44,7 +44,7 @@
 
         <hr />
 
-        <h2>Custom Filtering UI, filter function, & "no data" message</small></h2>
+        <h2>Custom Filtering UI, filter function, &amp; "no data" message</small></h2>
         <div class="row">
             <div class="col-xs-6 col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-6">
                 <div class="form-group has-feedback">
@@ -190,6 +190,47 @@
             </tbody>
         </table>
 
+        <hr />
+
+        <h2>Get Table Data</h2>
+
+        <button type="button" class="btn btn-primary" ng-click="getTableData(getDataFn)">Log Table Data To Console</button>
+        <label class="checkbox-inline">
+            <input type="checkbox" ng-model="shouldApplySorting">
+            Apply Sorting
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" ng-model="shouldApplyFiltering">
+            Apply Filtering
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" ng-model="limitToCurrentPageOnly">
+            Current page only
+        </label>
+
+        <table class="table table-striped" ts-wrapper ts-item-name="product" ts-get-table-data-function="getDataFn">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th ts-criteria="Id" ts-filter>Id</th>
+                    <th ts-criteria="Name|lowercase" ts-filter ts-default>Name</th>
+                    <th ts-criteria="Price|parseFloat" ts-filter>Price</th>
+                    <th ts-criteria="Quantity|parseInt" ts-filter>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in tableSixItems track by item.Id"
+                    ng-class="{'active':item.Selected}"
+                    ts-repeat>
+                    <td><input type="checkbox" ng-model="item.Selected" /></td>
+                    <td>{{item.Id}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Price | currency}}</td>
+                    <td>{{item.Quantity}}</td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 </div>
 
@@ -222,15 +263,17 @@
     angular
         .module( 'myApp', ['tableSort', 'ui.bootstrap'] )
         .controller( "tableTestCtrl", function tableTestCtrl($scope)  {
-          $scope.$on('tablesort:sortOrder', (event, sortOrder) => {
-            console.log('tablesort:sortOrder event', sortOrder);
-          });
+            $scope.$on('tablesort:sortOrder', (event, sortOrder) => {
+                console.log('tablesort:sortOrder event', sortOrder);
+            });
+
             //Generate some fake data
             $scope.tableOneItems = getFakeData(100);
             $scope.tableTwoItems = getFakeData(100);
             $scope.tableThreeItems = getFakeData(12);
             $scope.tableFourItems = getFakeData(100);
             $scope.tableFiveItems = getFakeData(20);
+            $scope.tableSixItems = getFakeData(25);
 
             $scope.customPerPageOptions = [20,40,60];
             $scope.customPerPageDefault = 40;
@@ -251,6 +294,15 @@
                 }
 
                 return nameMatch && priceMatch;
+            };
+
+            //Get Table Data
+            $scope.shouldApplySorting = true;
+            $scope.shouldApplyFiltering = true;
+            $scope.limitToCurrentPageOnly = false;
+            $scope.getTableData = function (getDataFn) {
+                var results = getDataFn($scope.shouldApplySorting, $scope.shouldApplyFiltering, $scope.limitToCurrentPageOnly);
+                console.log("data from table", results)
             };
         });
 

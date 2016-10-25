@@ -339,6 +339,33 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 $element.after($paginationHtml);
             }
 
+            if( $attrs.tsGetTableDataFunction ) {
+                var getter = $parse($attrs.tsGetTableDataFunction);
+                var setter = getter.assign;
+                
+                //If this attribute has a value, then we want to turn it into a function on the parent scope
+                //so that it can be passed into other functions and run on the parent controllers as needed
+                var fn  = function( shouldApplySorting, shouldApplyFiltering, limitToCurrentPageOnly ) {
+                    var arr = $parse($scope.itemsArrayExpression)($scope);
+
+                    if( shouldApplySorting ) {
+                        arr = arr.sort($scope.sortFun);
+                    }
+
+                    if( shouldApplyFiltering ) {
+                        arr = $scope.filterLimitFun(arr);
+                    }
+
+                    if( limitToCurrentPageOnly ) {
+                        arr = $scope.pageLimitFun(arr);
+                    }
+
+                    return arr;
+                };
+
+                setter($scope.$parent, fn);
+            }
+
             $scope.$on( '$destroy', function() {
                 //When the directive is destroyed, also remove the filter & pagination HTML
                 if( $filterHtml ) {

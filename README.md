@@ -339,3 +339,28 @@ $scope.customFilterFn = function(item){
     </tbody>
 </table>
 ```
+
+###Getting Data Out of the Table
+
+To get the current view of the data in the table, pass something to the `ts-get-table-data-function` attribute.  Whatever is passed in will be converted into a function.
+That function can then be passed as a parameter to a click event function, or anything else.  Within the controller, just run that function and it will return the data in the table.
+
+```html
+<button type="button" ng-click="getTableData(getDataFn)">Get the table data</button>
+
+<table ts-wrapper ts-get-table-data-function="getDataFn">
+```
+
+In the above example, the click function `ng-click="getTableData(getDataFn)"` would be handled like this:
+
+```js
+$scope.getTableData = function (getDataFn) {
+    var results = getDataFn(true, true, false);
+    console.log("data from table", results)
+};
+```
+
+When running the `getDataFn` function, it accepts 3 boolean parameters
+ 1. When `true` the data will come back in the same sort order as the table is currently displaying.  When `false` the data will come back in the original sort order (pre-tablesort)
+ 2. When `true` the data will only include items that match the current filters, which will match the current table display.  When `false` all items in the table are included regarless of what is currently being filtered.
+ 3. When `true` **and pagination is enabled**, the data will only return the currently viewed page of data. When `false` data from all pages will be returned.
