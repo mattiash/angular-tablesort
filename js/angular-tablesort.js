@@ -60,7 +60,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     //TODO: Format these numbers, perhaps optionally
                     var maxOnPage = total !== $scope.filtering.filteredCount ? $scope.filtering.filteredCount : total;
                     //This keeps the first page labeled as 1, not 0
-                    var startPage = Math.max(($scope.pagination.currentPage - 1) * ($scope.pagination.perPage + 1), 1);
+                    var startPage = Math.max(($scope.pagination.currentPage - 1) * $scope.pagination.perPage + 1, 1);
                     var endPage = Math.min($scope.pagination.currentPage * $scope.pagination.perPage, maxOnPage);
                     //This prevents the range from showing when the total number of items can be shown on a single page
                     return $scope.filtering.filteredCount === 0 ? '' : (endPage === maxOnPage && startPage === 1 ? '' : startPage + '-') + endPage;
