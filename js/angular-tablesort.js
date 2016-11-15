@@ -47,6 +47,32 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             .replace(/CURRENT_PAGE_NUMBER/g, 'pagination.currentPage');
     }
 
+    function createDefaultComparer() {
+
+        var numericComparer = function (a, b) {
+            if (a > b) return 1;
+            if (a < b) return -1;
+            return 0;
+        }
+
+        var collator = new Intl.Collator(undefined, { sensitivity: 'case' });
+
+        var comparerFn = function (a, b) {
+
+            if (typeof a === 'number' && typeof b === 'number')
+                return numericComparer(a, b);
+
+            if (a instanceof Date && b instanceof Date)
+                return numericComparer(a.getTime(), b.getTime());
+
+            return collator.compare(a, b);
+        }
+
+        return comparerFn;
+    }
+
+    var defaultComparer = createDefaultComparer();
+
     return {
         scope: true,
         controller: ['$scope', 'tableSortConfig', function($scope, tableSortConfig ) {
@@ -269,7 +295,6 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
 
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun, compResult;
-                var collator = new Intl.Collator(undefined, {sensitivity: 'case'});
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
                     aval = $scope.sortExpression[i][0](a);
                     bval = $scope.sortExpression[i][0](b);
@@ -285,7 +310,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     bval = '';
                     }
                     descending = $scope.sortExpression[i][2];
-                    compResult = collator.compare(aval, bval);
+                    compResult = defaultComparer(aval, bval);
                     if( compResult === 1 ) {
                         return descending ? -1 : 1;
                     } else if( compResult === -1 ) {
