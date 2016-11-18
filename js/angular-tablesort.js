@@ -53,9 +53,23 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             if (a > b) return 1;
             if (a < b) return -1;
             return 0;
-        }
+        };
 
-        var collator = new Intl.Collator(undefined, { sensitivity: 'case' });
+        var stringComparer = function(a, b) {
+            if (a === b) {
+                return 0;
+            }
+            return a > b ? -1 : 1;
+        };
+
+        if(typeof Intl === 'object') {
+            stringComparer = new Intl.Collator(undefined, {sensitivity: 'case'}).compare;
+        }
+        else if(typeof String.prototype.localeCompare === 'function') {
+            stringComparer = function(a, b) {
+                return (a + '').localeCompare(b);
+            };
+        }
 
         var comparerFn = function (a, b) {
 
@@ -65,8 +79,8 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             if (a instanceof Date && b instanceof Date)
                 return numericComparer(a.getTime(), b.getTime());
 
-            return collator.compare(a, b);
-        }
+            return stringComparer(a, b);
+        };
 
         return comparerFn;
     }
