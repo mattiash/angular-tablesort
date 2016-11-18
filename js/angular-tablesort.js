@@ -329,7 +329,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     if( bval === undefined || bval === null ) {
                         bval = '';
                     }
-                    compResult = collator.compare(aval, bval);
+                    compResult = defaultComparer(aval, bval);
                     if( compResult === 1 ) {
                         return descending ? -1 : 1;
                     } else if( compResult === -1 ) {
@@ -367,7 +367,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             if( $attrs.tsGetTableDataFunction ) {
                 var getter = $parse($attrs.tsGetTableDataFunction);
                 var setter = getter.assign;
-                
+
                 //If this attribute has a value, then we want to turn it into a function on the parent scope
                 //so that it can be passed into other functions and run on the parent controllers as needed
                 var fn  = function( shouldApplySorting, shouldApplyFiltering, limitToCurrentPageOnly ) {
