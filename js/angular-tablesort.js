@@ -63,7 +63,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         }
         else if(typeof String.prototype.localeCompare === 'function') {
             stringComparer = function(a, b) {
-                return (a + '').localeCompare(b);
+                return (a + '').localeCompare(b, undefined, {sensitivity: 'case'});
             };
         }
 
