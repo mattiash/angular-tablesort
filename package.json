@@ -7,10 +7,7 @@
     "type": "git",
     "url": "https://github.com/mattiash/angular-tablesort.git"
   },
-  "typescript": {
-    "definition": "typedefs/angular-tablesort.d.ts"
-  },
-  "typings": "./typedefs/angular-tablesort",
+  "types": "typedefs/angular-tablesort.d.ts",
   "license": "MIT",
   "homepage": "https://github.com/mattiash/angular-tablesort"
 }
