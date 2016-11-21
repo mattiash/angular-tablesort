@@ -49,18 +49,14 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
 
     function createDefaultComparer() {
 
-        var numericComparer = function (a, b) {
+        function _defaultComparer(a, b) {
             if (a > b) return 1;
             if (a < b) return -1;
             return 0;
         };
 
-        var stringComparer = function(a, b) {
-            if (a === b) {
-                return 0;
-            }
-            return a > b ? -1 : 1;
-        };
+        var stringComparer = _defaultComparer;
+        var numericComparer = _defaultComparer;
 
         if(typeof Intl === 'object') {
             stringComparer = new Intl.Collator(undefined, {sensitivity: 'case'}).compare;
@@ -72,7 +68,6 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         }
 
         var comparerFn = function (a, b) {
-
             if (typeof a === 'number' && typeof b === 'number')
                 return numericComparer(a, b);
 
