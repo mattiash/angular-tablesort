@@ -57,6 +57,12 @@ declare namespace angular.tablesort {
          */
         noDataText: string;
 
+        /**
+         * @description Provide the default CSS class to be applied to an element that will wrap the `<table>` element only. If left blank, no element will wrap the table.
+         * @default ""
+         */
+        wrappingElementClass: string;
+
     }
 
     /**

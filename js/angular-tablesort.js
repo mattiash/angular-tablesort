@@ -17,6 +17,7 @@ tableSortModule.provider( 'tableSortConfig', function () {
     this.itemNameSingular = 'item';                    //Default name
     this.itemNamePlural = this.itemNameSingular + 's'; //Default way to make an item plural for English
     this.noDataText = 'No ' + this.itemNamePlural;     //Default text to show that there are no items
+    this.wrappingElementClass = "";                    //Empty by default
 
     if( !isNaN(this.perPageDefault) && this.perPageOptions.indexOf(this.perPageDefault) === -1 ) {
         //If a default per-page option was added that isn't in the array, add it at the end
@@ -116,6 +117,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
             $scope.noDataText = tableSortConfig.noDataText;
+            $scope.wrappingElementClass = tableSortConfig.wrappingElementClass;
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -229,6 +231,11 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             if( $attrs.tsNoDataText ) {
                 //If the noDataText was specified, update it
                 $scope.noDataText = $attrs.tsNoDataText;
+            }
+
+            if( $attrs.tsWrappingElementClass ) {
+                //If the wrappingElementClass was specified, update it
+                $scope.wrappingElementClass = $attrs.tsWrappingElementClass;
             }
 
             //local attribute usages of the pagination/filtering options will override the global config
@@ -375,6 +382,12 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 $element.after($paginationHtml);
             }
 
+             var $wrappingElement;
+            if( $scope.wrappingElementClass && $scope.wrappingElementClass !== "" ) {
+                //This should happen AFTER the filtering and pagination HTML are set
+                $wrappingElement = $element.wrap("<div class='"+ $scope.wrappingElementClass +"' />");
+            }
+
             if( $attrs.tsGetTableDataFunction ) {
                 var getter = $parse($attrs.tsGetTableDataFunction);
                 var setter = getter.assign;
@@ -409,6 +422,10 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 }
                 if( $paginationHtml ) {
                     $paginationHtml.remove();
+                }
+                if( $wrappingElement ) {
+                    //un-wrap the table from this element
+                    $wrappingElement.replaceWith($element);
                 }
             });
         }
