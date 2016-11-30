@@ -131,7 +131,7 @@ $scope.$on('tablesort:sortOrder', (event, sortOrder) => {
  CSS
 ---
 
-All table headings that can be sorted on is styled with css-class `tablesort-sortable`. The table headings that the table is currently sorted on is styled with `tablesort-asc` or `tablesort-desc` classes depending on the sort-direction. A stylesheet is included to show that it works, but you probably want to build your own.
+All table headings that can be sorted on is styled with the css class `tablesort-sortable`. The table headings that the table is currently sorted on is styled with `tablesort-asc` or `tablesort-desc` classes depending on the sort-direction. A stylesheet is included to show that it works, but you probably want to build your own.
 
 
 Empty Tables
@@ -157,12 +157,12 @@ Several options may be configured globally per-app.
 
 
 | Property             | Type              | Default                | Description |
-|--------------------|-------------------|------------------------|-------------|
+|----------------------|-------------------|------------------------|-------------|
 |`filterTemplate`      |`string`           |`""`                    |HTML string template for filtering the table. _This will be included **before** the element with `ts-wrapper` specified on it._  See example above.|
-|`filterFunction`    |`function`         |`null`                  |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
+|`filterFunction`      |`function`         |`undefined`             |A function that will be called for every item being iterated over in the table. This function will be passed the object being iterated over as the first parameter. It should return a `boolean` value as to include the item or not.  _(This can be overridden per-table)_|
 |`itemNameSingular`    |`string`           |`"item"`                |The default singular version of the name for the items being iterated over. _(This can be overridden per-table)_|
 |`itemNamePlural`      |`string`           |`itemNameSingular + "s"`|The default plural version of the name for the items being iterated over. This just appends `"s"` to the singular name, which should work for most words in English. _(This can be overridden per-table)_|
-|`noDataText`        |`string`           |`"No " + itemNamePlural`|The text that displays in the `.showIfLast` cell shown when a table is empty|
+|`noDataText`          |`string`           |`"No " + itemNamePlural`|The text that displays in the `.showIfLast` cell shown when a table is empty.   _(This can be overridden per-table)_|
 |`wrappingElementClass`|`string`           |`""`                    |The the default CSS class to be applied to an element that will wrap the `<table>` element only. If left blank, no element will wrap the table.   _(This can be overridden per-table)_|
 |`paginationTemplate`  |`string`           |`""`                    |HTML string template for paging the table. _This will be included **after** the element with `ts-wrapper` specified on it._ See example above.|
 |`perPageOptions`      |`array` of `number`|`[10, 25, 50, 100]`     |The options for how many items to show on each page of results.  _(This can be overridden per-table)_|
@@ -376,5 +376,5 @@ $scope.getTableData = function (getDataFn) {
 
 When running the `getDataFn` function, it accepts 3 boolean parameters
  1. When `true` the data will come back in the same sort order as the table is currently displaying.  When `false` the data will come back in the original sort order (pre-tablesort)
- 2. When `true` the data will only include items that match the current filters, which will match the current table display.  When `false` all items in the table are included regarless of what is currently being filtered.
+ 2. When `true` the data will only include items that match the current filters, which will match the current table display.  When `false` all items in the table are included regardless of what is currently being filtered.
  3. When `true` **and pagination is enabled**, the data will only return the currently viewed page of data. When `false` data from all pages will be returned.
