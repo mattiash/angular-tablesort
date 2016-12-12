@@ -304,16 +304,6 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 return filteredArr;
             };
 
-            function defaultSort( a, b ) {
-              if (a > b) {
-                return 1;
-              } else if (a === b) {
-                return 0;
-              } else {
-                return -1;
-              }
-            }
-
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun, compResult;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
