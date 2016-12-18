@@ -7,21 +7,24 @@ License: MIT
 var tableSortModule = angular.module( 'tableSort', [] );
 
 tableSortModule.provider( 'tableSortConfig', function () {
-    this.filterTemplate = ''; //no filtering by default unless a template is provided
-    this.filterFunction = null; //empty by default - use the built in filter function when left blank
-    this.paginationTemplate = ''; //no pagination by default unless a template is provided
-    this.perPageOptions = [10, 25, 50, 100];
-    this.perPageDefault = this.perPageOptions[0]; //first option by default
-    this.itemNameSingular = 'item';
-    this.itemNamePlural = this.itemNameSingular + 's';
-    this.noDataText = 'No ' + this.itemNamePlural;
+    this.filterTemplate = '';                          //No filtering by default unless a template is provided
+    this.filterFunction = undefined;                   //Empty by default - use the built in filter function when left blank
+    this.paginationTemplate = '';                      //No pagination by default unless a template is provided
+    
+    //The below options can all be overridden on a per-table basis
+    this.perPageOptions = [10, 25, 50, 100];           //Default pagination options
+    this.perPageDefault = this.perPageOptions[0];      //Select the first option by default
+    this.itemNameSingular = 'item';                    //Default name
+    this.itemNamePlural = this.itemNameSingular + 's'; //Default way to make an item plural for English
+    this.noDataText = 'No ' + this.itemNamePlural;     //Default text to show that there are no items
+    this.wrappingElementClass = "";                    //Empty by default
 
     if( !isNaN(this.perPageDefault) && this.perPageOptions.indexOf(this.perPageDefault) === -1 ) {
-        //If a default per-page option was added that isn't in the array, add it and sort the array
+        //If a default per-page option was added that isn't in the array, add it at the end
         this.perPageOptions.push(this.perPageDefault);
     }
 
-    //Sort the array
+    //Sort the per-page options array
     this.perPageOptions.sort(function (a,b) {return a - b;});
 
     this.$get = function () {
@@ -114,6 +117,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             $scope.itemNameSingular = tableSortConfig.itemNameSingular;
             $scope.itemNamePlural = tableSortConfig.itemNamePlural;
             $scope.noDataText = tableSortConfig.noDataText;
+            $scope.wrappingElementClass = tableSortConfig.wrappingElementClass;
             $scope.sortExpression = [];
             $scope.headings = [];
 
@@ -229,6 +233,11 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             if( $attrs.tsNoDataText ) {
                 //If the noDataText was specified, update it
                 $scope.noDataText = $attrs.tsNoDataText;
+            }
+
+            if( $attrs.tsWrappingElementClass ) {
+                //If the wrappingElementClass was specified, update it
+                $scope.wrappingElementClass = $attrs.tsWrappingElementClass;
             }
 
             //local attribute usages of the pagination/filtering options will override the global config
@@ -375,6 +384,12 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 $element.after($paginationHtml);
             }
 
+             var $wrappingElement;
+            if( $scope.wrappingElementClass && $scope.wrappingElementClass !== "" ) {
+                //This should happen AFTER the filtering and pagination HTML are set
+                $wrappingElement = $element.wrap("<div class='"+ $scope.wrappingElementClass +"' />");
+            }
+
             if( $attrs.tsGetTableDataFunction ) {
                 var getter = $parse($attrs.tsGetTableDataFunction);
                 var setter = getter.assign;
@@ -409,6 +424,10 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 }
                 if( $paginationHtml ) {
                     $paginationHtml.remove();
+                }
+                if( $wrappingElement ) {
+                    //un-wrap the table from this element
+                    $wrappingElement.replaceWith($element);
                 }
             });
         }
