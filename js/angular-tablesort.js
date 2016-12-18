@@ -1,5 +1,5 @@
 /*
-angular-tablesort v1.3.3
+angular-tablesort v1.4.0
 (c) 2013-2016 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
 License: MIT
 */
@@ -10,7 +10,7 @@ tableSortModule.provider( 'tableSortConfig', function () {
     this.filterTemplate = '';                          //No filtering by default unless a template is provided
     this.filterFunction = undefined;                   //Empty by default - use the built in filter function when left blank
     this.paginationTemplate = '';                      //No pagination by default unless a template is provided
-    
+
     //The below options can all be overridden on a per-table basis
     this.perPageOptions = [10, 25, 50, 100];           //Default pagination options
     this.perPageDefault = this.perPageOptions[0];      //Select the first option by default
