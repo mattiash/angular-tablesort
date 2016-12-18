@@ -140,7 +140,7 @@ Empty Tables
 By default, the content for the empty table cell is set to `"No Items"`, however it can be changed via the `noDataText` configuration option (see below). It is inserted as one `<td>` spanning
 all columns and placed inside a `<tr class="showIfLast">`, which is placed at the top of each table.
 
-The message can be customized for each table by specifying the `ts-no-data-text` attribute on the same element as the `ts-wrapper`. 
+The message can be customized for each table by specifying the `ts-no-data-text` attribute on the same element as the `ts-wrapper`.
 ```html
 <table ts-wrapper ts-no-data-text="Nothing to see here...">
 ```
@@ -198,7 +198,7 @@ angular
         filterString +=      "</div>";
         filterString +=    "</div>";
         tableSortConfigProvider.filterTemplate = filterString;
-        
+
         var pagerString = "<div class='text-right'>";
         pagerString +=      "<small class='text-muted'>Showing {{CURRENT_PAGE_RANGE}} {{FILTERED_COUNT === 0 ? '' : 'of'}} ";
         pagerString +=        "<span ng-if='FILTERED_COUNT === TOTAL_COUNT'>{{TOTAL_COUNT | number}} {{TOTAL_COUNT === 1 ? ITEM_NAME_SINGULAR : ITEM_NAME_PLURAL}}</span>";
@@ -235,7 +235,7 @@ There are several tokens that can be used in the templates which will be replace
 The name of the things listed in the table can be displayed in the filtering and pagination templates. They are named `"items"` collectively and `"item"` individually by default, but this can be customized in the global config, and per-table to be more specific as to what is being listed.
 
 On a table just set the `ts-item-name` attribute on the same element as `ts-wrapper`. Set this as the singular version of the word, not the plural.
- 
+
  ```html
 <table ts-wrapper ts-item-name="product">
 ```
@@ -278,7 +278,7 @@ Another approach is to add the `ts-filter-fields` attribute to the same element 
 Set the `ts-per-page-options` attribute on the same element that `ts-wrapper` is set on to override the options for the number of items available per page.
 
 Set the `ts-per-page-default` attribute on the same element that `ts-wrapper` is set on to override the default number of items available per page.
-  
+
  ```html
 <table ts-wrapper ts-per-page-options="[5, 10, 15, 30]" ts-per-page-default="15">
 ```
@@ -313,7 +313,7 @@ $scope.customFilterFn = function(item){
     }
 };
  ```
- 
+
  ```html
 <label>Enabled</label>
 <select ng-model="customFilterValue">
@@ -364,3 +364,19 @@ When running the `getDataFn` function, it accepts 3 boolean parameters
  1. When `true` the data will come back in the same sort order as the table is currently displaying.  When `false` the data will come back in the original sort order (pre-tablesort)
  2. When `true` the data will only include items that match the current filters, which will match the current table display.  When `false` all items in the table are included regarless of what is currently being filtered.
  3. When `true` **and pagination is enabled**, the data will only return the currently viewed page of data. When `false` data from all pages will be returned.
+
+### Customized Sorting
+
+It may be useful to customize how a particular column is sorted. For example, if a column can contain
+numbers and strings, you may want the numbers to be sorted numerically and the strings to be sorted
+lexicographically. To specify a custom sorting function, add a `ts-order-by` attribute to your
+header element:
+
+```html
+<th ts-criteria="name" ts-order-by="numbersBeforeStrings">Name</th>
+```
+
+The function specified in the `ts-order-by` attibute should behave in the same way as a custom comparison
+function passed to `Array.prototype.sort`. See
+[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+for more details.
