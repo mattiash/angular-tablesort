@@ -450,7 +450,7 @@ tableSortModule.directive( 'tsCriteria', function() {
                     }
                 } );
             };
-            element.on('click', clickingCallback );
+            element[element.on ? 'on' : 'bind']('click', clickingCallback );
             element.addClass( 'tablesort-sortable' );
             if( 'tsDefault' in attrs && attrs.tsDefault !== '0' ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
