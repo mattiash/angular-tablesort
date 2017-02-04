@@ -1,5 +1,5 @@
 /*
-angular-tablesort v1.4.0
+angular-tablesort v1.4.1
 (c) 2013-2016 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
 License: MIT
 */
