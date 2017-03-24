@@ -211,11 +211,17 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         link: function($scope, $element, $attrs, tsWrapperCtrl) {
         
             function parseExprOrGetString(v) {
-                var expr = $scope.$eval(v);
-                if (!expr) {
+                try {
+                    //try to parse the string to see if it contains an expression
+                    var expr = $scope.$eval(v);
+                    if (!expr) {
+                        return v;
+                    } else {
+                        return expr;
+                    }
+                } catch (ex) {
+                    //just bare text, so we return that
                     return v;
-                } else {
-                    return expr;
                 }
             } 
             
