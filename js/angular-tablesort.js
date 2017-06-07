@@ -452,7 +452,7 @@ tableSortModule.directive( 'tsCriteria', function() {
             };
             element[element.on ? 'on' : 'bind']('click', clickingCallback );
             element.addClass( 'tablesort-sortable' );
-            if( 'tsDefault' in attrs && attrs.tsDefault !== '0' ) {
+            if( 'tsDefault' in attrs && attrs.tsDefault !== '0' && attrs.tsDefault !== undefined ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
                 if( attrs.tsDefault === 'descending' ) {
                     tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
