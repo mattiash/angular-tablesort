@@ -465,9 +465,18 @@ tableSortModule.directive( 'tsCriteria', function() {
                     }
                 } );
             };
+            // Add a callback method that can be triggered by keyboard press of Enter or Space in order to
+            // make this module more ADA compliant
+            var keypressCallback = function(event) {
+                scope.$apply( function() {
+                    if (event.which === 13 || event.which === 32) //check whether space or enter was pressed
+                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy);
+                } );
+            };
             element[element.on ? 'on' : 'bind']('click', clickingCallback );
+            element[element.on ? 'on' : 'bind']('keypress', keypressCallback ); //Add event handler for keypress call back
             element.addClass( 'tablesort-sortable' );
-            if( 'tsDefault' in attrs && attrs.tsDefault !== '0' ) {
+            if( 'tsDefault' in attrs && attrs.tsDefault !== '0' && attrs.tsDefault !== undefined ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
                 if( attrs.tsDefault === 'descending' ) {
                     tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
