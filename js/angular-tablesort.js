@@ -1,6 +1,6 @@
 /*
-angular-tablesort v1.4.1
-(c) 2013-2016 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
+angular-tablesort v1.5.0
+(c) 2013-2017 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
 License: MIT
 */
 
@@ -209,7 +209,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             };
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl) {
-        
+
             function parseExprOrGetString(v) {
                 try {
                     //try to parse the string to see if it contains an expression
@@ -223,8 +223,8 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     //just bare text, so we return that
                     return v;
                 }
-            } 
-            
+            }
+
             if( $attrs.tsItemName ) {
                 var originalNoDataText = 'No ' + $scope.itemNamePlural;
 
