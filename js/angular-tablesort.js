@@ -209,19 +209,34 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             };
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl) {
-
+        
+            function parseExprOrGetString(v) {
+                try {
+                    //try to parse the string to see if it contains an expression
+                    var expr = $scope.$eval(v);
+                    if (!expr) {
+                        return v;
+                    } else {
+                        return expr;
+                    }
+                } catch (ex) {
+                    //just bare text, so we return that
+                    return v;
+                }
+            } 
+            
             if( $attrs.tsItemName ) {
                 var originalNoDataText = 'No ' + $scope.itemNamePlural;
 
                 //if the table attributes has an item name on it, this takes priority
-                $scope.itemNameSingular = $attrs.tsItemName;
+                $scope.itemNameSingular = parseExprOrGetString($attrs.tsItemName);
 
                 if( $attrs.tsItemNamePlural ) {
                     //if a plural name was specified, use that
-                    $scope.itemNamePlural = $attrs.tsItemNamePlural;
+                    $scope.itemNamePlural = parseExprOrGetString($attrs.tsItemNamePlural);
                 } else {
                     //otherwise just add 's' to the singular name
-                    $scope.itemNamePlural = $attrs.tsItemName + 's';
+                    $scope.itemNamePlural = parseExprOrGetString($attrs.tsItemName) + 's';
                 }
 
                 if( !$attrs.tsNoDataText && $scope.noDataText === originalNoDataText ) {
@@ -232,7 +247,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
 
             if( $attrs.tsNoDataText ) {
                 //If the noDataText was specified, update it
-                $scope.noDataText = $attrs.tsNoDataText;
+                $scope.noDataText = parseExprOrGetString($attrs.tsNoDataText);
             }
 
             if( $attrs.tsWrappingElementClass ) {
