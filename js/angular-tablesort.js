@@ -61,7 +61,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         var stringComparer = _defaultComparer;
         var numericComparer = _defaultComparer;
 
-        if(typeof Intl === 'object') {
+        if(typeof Intl === 'object' && typeof Intl.Collator === 'function') {
             stringComparer = new Intl.Collator(undefined, {sensitivity: 'case'}).compare;
         }
         else if(typeof String.prototype.localeCompare === 'function') {
