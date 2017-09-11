@@ -508,7 +508,10 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
                 }
             }
 
-            var tsExpr = 'tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun';
+            var tsExpr = 'tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun';
+            if (angular.isUndefined(attrs.tsNoSort)){
+                tsExpr = 'tablesortOrderBy:sortFun | ' + tsExpr;
+            }
             var repeatExpr = element.attr(ngRepeatDirective);
             var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
