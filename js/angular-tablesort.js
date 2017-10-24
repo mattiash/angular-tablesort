@@ -489,7 +489,7 @@ tableSortModule.directive( 'tsCriteria', function() {
                 }
             }
             if( 'tsFilter' in attrs) {
-                tsWrapperCtrl.addFilterField( attrs.tsCriteria, element );
+                tsWrapperCtrl.addFilterField( attrs.tsFilter || attrs.tsCriteria, element );
             }
             tsWrapperCtrl.registerHeading( element );
         }
