@@ -355,9 +355,15 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
 
                 // All the sort fields were equal. If there is a 'track by'' expression,
                 // use that as a tiebreaker to make the sort result stable.
-                if( $scope.trackBy ) {
-                    aval = a[$scope.trackBy];
-                    bval = b[$scope.trackBy];
+                if( $scope.trackBy ) {                    
+                    if ($scope.trackBy === '$index'){
+                        var arr = $parse($scope.itemsArrayExpression)($scope);
+                        aval = arr.indexOf(a);
+                        bval = arr.indexOf(b);
+                    } else {
+                        aval = a[$scope.trackBy];
+                        bval = b[$scope.trackBy];
+                    }
                     if( aval === undefined || aval === null ) {
                         aval = '';
                     }
@@ -511,10 +517,10 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
             var tsExpr = 'tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun';
             var repeatExpr = element.attr(ngRepeatDirective);
             var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
-            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
+            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+(\$index|\S+?\.(\S+))/);
             var repeatInMatch = repeatExpr.match(repeatExprRegex);
-            if (trackByMatch) {
-                tsWrapperCtrl.setTrackBy(trackByMatch[1]);
+            if (trackByMatch) {                
+                tsWrapperCtrl.setTrackBy(trackByMatch[2] || trackByMatch[1]);
             }
 
             //Limit Sort the results, then limit them to only include what matches the filter, then only what's on the current page
