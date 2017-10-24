@@ -1,6 +1,6 @@
 {
   "name": "angular-tablesort",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Sort angularjs tables easily",
   "main": "index.js",
   "repository": {
