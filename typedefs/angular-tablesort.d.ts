@@ -2,13 +2,15 @@
 // Project: https://github.com/mattiash/angular-tablesort
 // Definitions by: AppRiver, LLC
 
+import * as angular from 'angular';
+
 declare module 'angular-tablesort' {
     export type ITableSortConfigProvider = angular.tablesort.ITableSortConfigProvider;
     export type ITableSortGetDataFunc<T> = angular.tablesort.ITableSortGetDataFunc<T>;
 }
 
 declare module 'angular' {
-    namespace tablesort {
+    export namespace tablesort {
         export interface ITableSortConfigProvider {
             /**
              * @description Provide the default function for filtering down items when models change
