@@ -342,13 +342,13 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                         aval = '';
                     }
                     if( bval === undefined || bval === null ) {
-                    bval = '';
+                        bval = '';
                     }
                     descending = $scope.sortExpression[i][2];
                     compResult = ($scope.sortExpression[i][4] || defaultComparer)(aval, bval);
-                    if( compResult === 1 ) {
+                    if( compResult > 0 ) {
                         return descending ? -1 : 1;
-                    } else if( compResult === -1 ) {
+                    } else if( compResult < 0 ) {
                         return descending ? 1 : -1;
                     }
                 }
@@ -371,9 +371,9 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                         bval = '';
                     }
                     compResult = defaultComparer(aval, bval);
-                    if( compResult === 1 ) {
+                    if( compResult > 0 ) {
                         return descending ? -1 : 1;
-                    } else if( compResult === -1 ) {
+                    } else if( compResult < 0 ) {
                         return descending ? 1 : -1;
                     }
                 }
