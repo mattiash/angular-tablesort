@@ -574,13 +574,15 @@ tableSortModule.filter( 'tablesortOrderBy', function() {
 
 tableSortModule.filter( 'parseInt', function() {
     return function(input) {
-        return parseInt( input ) || null;
+        var i = parseInt( input );
+        return isNaN( i ) ? null : i;
     };
 } );
 
 tableSortModule.filter( 'parseFloat', function() {
     return function(input) {
-        return parseFloat( input ) || null;
+        var f = parseFloat( input );
+        return isNaN( f ) ? null : f;
     };
 } );
 
