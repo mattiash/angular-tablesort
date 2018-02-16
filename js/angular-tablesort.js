@@ -331,8 +331,8 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
             $scope.sortFun = function( a, b ) {
                 var i, aval, bval, descending, filterFun, compResult;
                 for( i=0; i<$scope.sortExpression.length; i=i+1 ) {
-                    aval = $scope.sortExpression[i][0](a);
-                    bval = $scope.sortExpression[i][0](b);
+                    aval = $scope.sortExpression[i][0](a, $scope);
+                    bval = $scope.sortExpression[i][0](b, $scope);
                     filterFun = b[$scope.sortExpression[i][1]];
                     if( filterFun ) {
                         aval = filterFun( aval );
