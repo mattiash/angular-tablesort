@@ -565,10 +565,10 @@ tableSortModule.filter( 'tablesortLimit', function() {
 } );
 
 tableSortModule.filter( 'tablesortOrderBy', function() {
-    return function(array, sortfun ) {
-        if(!array) return;
-        var arrayCopy = array.concat();
-        return arrayCopy.sort( sortfun );
+    return function(list, sortfun ) {
+        if(!list) return;
+        var listCopy = Object.keys(list).map(function(key){ return list[key] });
+        return listCopy.sort( sortfun );
     };
 } );
 
