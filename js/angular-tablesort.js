@@ -1,6 +1,6 @@
 /*
-angular-tablesort v1.4.1
-(c) 2013-2016 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
+angular-tablesort v1.6.1
+(c) 2013-2018 Mattias Holmlund, http://mattiash.github.io/angular-tablesort
 License: MIT
 */
 
@@ -61,7 +61,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         var stringComparer = _defaultComparer;
         var numericComparer = _defaultComparer;
 
-        if(typeof Intl === 'object') {
+        if(typeof Intl === 'object' && typeof Intl.Collator === 'function') {
             stringComparer = new Intl.Collator(undefined, {sensitivity: 'case'}).compare;
         }
         else if(typeof String.prototype.localeCompare === 'function') {
@@ -210,18 +210,33 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
         }],
         link: function($scope, $element, $attrs, tsWrapperCtrl) {
 
+            function parseExprOrGetString(v) {
+                try {
+                    //try to parse the string to see if it contains an expression
+                    var expr = $scope.$eval(v);
+                    if (!expr) {
+                        return v;
+                    } else {
+                        return expr;
+                    }
+                } catch (ex) {
+                    //just bare text, so we return that
+                    return v;
+                }
+            }
+
             if( $attrs.tsItemName ) {
                 var originalNoDataText = 'No ' + $scope.itemNamePlural;
 
                 //if the table attributes has an item name on it, this takes priority
-                $scope.itemNameSingular = $attrs.tsItemName;
+                $scope.itemNameSingular = parseExprOrGetString($attrs.tsItemName);
 
                 if( $attrs.tsItemNamePlural ) {
                     //if a plural name was specified, use that
-                    $scope.itemNamePlural = $attrs.tsItemNamePlural;
+                    $scope.itemNamePlural = parseExprOrGetString($attrs.tsItemNamePlural);
                 } else {
                     //otherwise just add 's' to the singular name
-                    $scope.itemNamePlural = $attrs.tsItemName + 's';
+                    $scope.itemNamePlural = parseExprOrGetString($attrs.tsItemName) + 's';
                 }
 
                 if( !$attrs.tsNoDataText && $scope.noDataText === originalNoDataText ) {
@@ -232,7 +247,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
 
             if( $attrs.tsNoDataText ) {
                 //If the noDataText was specified, update it
-                $scope.noDataText = $attrs.tsNoDataText;
+                $scope.noDataText = parseExprOrGetString($attrs.tsNoDataText);
             }
 
             if( $attrs.tsWrappingElementClass ) {
@@ -327,22 +342,28 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                         aval = '';
                     }
                     if( bval === undefined || bval === null ) {
-                    bval = '';
+                        bval = '';
                     }
                     descending = $scope.sortExpression[i][2];
                     compResult = ($scope.sortExpression[i][4] || defaultComparer)(aval, bval);
-                    if( compResult === 1 ) {
+                    if( compResult > 0 ) {
                         return descending ? -1 : 1;
-                    } else if( compResult === -1 ) {
+                    } else if( compResult < 0 ) {
                         return descending ? 1 : -1;
                     }
                 }
 
                 // All the sort fields were equal. If there is a 'track by'' expression,
                 // use that as a tiebreaker to make the sort result stable.
-                if( $scope.trackBy ) {
-                    aval = a[$scope.trackBy];
-                    bval = b[$scope.trackBy];
+                if( $scope.trackBy ) {                    
+                    if ($scope.trackBy === '$index'){
+                        var arr = $parse($scope.itemsArrayExpression)($scope);
+                        aval = arr.indexOf(a);
+                        bval = arr.indexOf(b);
+                    } else {
+                        aval = a[$scope.trackBy];
+                        bval = b[$scope.trackBy];
+                    }
                     if( aval === undefined || aval === null ) {
                         aval = '';
                     }
@@ -350,9 +371,9 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                         bval = '';
                     }
                     compResult = defaultComparer(aval, bval);
-                    if( compResult === 1 ) {
+                    if( compResult > 0 ) {
                         return descending ? -1 : 1;
-                    } else if( compResult === -1 ) {
+                    } else if( compResult < 0 ) {
                         return descending ? 1 : -1;
                     }
                 }
@@ -450,7 +471,16 @@ tableSortModule.directive( 'tsCriteria', function() {
                     }
                 } );
             };
+            // Add a callback method that can be triggered by keyboard press of Enter or Space in order to
+            // make this module more ADA compliant
+            var keypressCallback = function(event) {
+                scope.$apply( function() {
+                    if (event.which === 13 || event.which === 32) //check whether space or enter was pressed
+                        tsWrapperCtrl.setSortField(attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy);
+                } );
+            };
             element[element.on ? 'on' : 'bind']('click', clickingCallback );
+            element[element.on ? 'on' : 'bind']('keypress', keypressCallback ); //Add event handler for keypress call back
             element.addClass( 'tablesort-sortable' );
             if( 'tsDefault' in attrs && attrs.tsDefault !== '0' && attrs.tsDefault !== undefined ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
@@ -459,7 +489,7 @@ tableSortModule.directive( 'tsCriteria', function() {
                 }
             }
             if( 'tsFilter' in attrs) {
-                tsWrapperCtrl.addFilterField( attrs.tsCriteria, element );
+                tsWrapperCtrl.addFilterField( attrs.tsFilter || attrs.tsCriteria, element );
             }
             tsWrapperCtrl.registerHeading( element );
         }
@@ -487,10 +517,10 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
             var tsExpr = 'tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun';
             var repeatExpr = element.attr(ngRepeatDirective);
             var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
-            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
+            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+(\$index|\S+?\.(\S+))/);
             var repeatInMatch = repeatExpr.match(repeatExprRegex);
-            if (trackByMatch) {
-                tsWrapperCtrl.setTrackBy(trackByMatch[1]);
+            if (trackByMatch) {                
+                tsWrapperCtrl.setTrackBy(trackByMatch[2] || trackByMatch[1]);
             }
 
             //Limit Sort the results, then limit them to only include what matches the filter, then only what's on the current page
@@ -544,13 +574,15 @@ tableSortModule.filter( 'tablesortOrderBy', function() {
 
 tableSortModule.filter( 'parseInt', function() {
     return function(input) {
-        return parseInt( input ) || null;
+        var i = parseInt( input );
+        return isNaN( i ) ? null : i;
     };
 } );
 
 tableSortModule.filter( 'parseFloat', function() {
     return function(input) {
-        return parseFloat( input ) || null;
+        var f = parseFloat( input );
+        return isNaN( f ) ? null : f;
     };
 } );
 
