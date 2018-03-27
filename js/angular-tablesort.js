@@ -516,10 +516,9 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
 
             var tsExpr = 'tablesortOrderBy:sortFun | tablesortLimit:filterLimitFun | tablesortLimit:pageLimitFun';
             var repeatExpr = element.attr(ngRepeatDirective);
-            var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
+            var repeatExprRegex = /^\s*([\s\S]+?)\s+in\s+([\S]+?)\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/;
             var trackByMatch = repeatExpr.match(/\s+track\s+by\s+(\$index|\S+?\.(\S+))/);
-            var repeatInMatch = repeatExpr.match(repeatExprRegex);
-            if (trackByMatch) {                
+            if (trackByMatch) {
                 tsWrapperCtrl.setTrackBy(trackByMatch[2] || trackByMatch[1]);
             }
 
@@ -533,6 +532,8 @@ tableSortModule.directive( 'tsRepeat', ['$compile', '$interpolate', function($co
             } else {
                 repeatExpr = repeatExpr.replace(repeatExprRegex, '$1 in $2 | ' + tsExpr + '$3');
             }
+
+            var repeatInMatch = repeatExpr.match(repeatExprRegex);
 
             if (angular.isUndefined(attrs.tsHideNoData)) {
                 var startSym = $interpolate.startSymbol();
