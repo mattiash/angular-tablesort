@@ -104,6 +104,11 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     return $scope.filtering.filteredCount === 0 ? '' : (endPage === maxOnPage && startPage === 1 ? '' : startPage + '-') + endPage;
                 }
             };
+            $scope.$watch('pagination.perPage', function(newValue, oldValue) {
+                if (newValue != oldValue) {
+                    $scope.pagination.currentPage = 1;
+                }
+            });
 
             $scope.filtering = {
                 template: tableSortConfig.filterTemplate,
