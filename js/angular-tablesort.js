@@ -255,6 +255,11 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 $scope.wrappingElementClass = $attrs.tsWrappingElementClass;
             }
 
+            // If Current Page is passed in
+            if ( $attrs.tsCurrentPage ) {
+                $scope.pagination.currentPage = $scope.$eval($attrs.tsCurrentPage)
+            }
+
             //local attribute usages of the pagination/filtering options will override the global config
             if( $attrs.tsPerPageOptions ) {
                 $scope.pagination.perPageOptions = $scope.$eval($attrs.tsPerPageOptions);

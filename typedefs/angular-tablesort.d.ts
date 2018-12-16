@@ -13,6 +13,12 @@ declare module 'angular' {
     export namespace tablesort {
         export interface ITableSortConfigProvider {
             /**
+             * @description Provide a way to jump to a specific page
+             * @default first page
+             */
+            currentPage: number;
+
+            /**
              * @description Provide the default function for filtering down items when models change
              * @default A lowercase string match for values defined by the ts-criteria attributes with ts-filter also on them
              */
