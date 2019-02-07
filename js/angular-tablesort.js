@@ -133,10 +133,12 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     if( $scope.sortExpression[0][2] ) {
                         element.removeClass( 'tablesort-desc' );
                         element.addClass( 'tablesort-asc' );
+                        element.attr('aria-sort', 'ascending');
                         $scope.sortExpression[0][2] = false;
                     } else {
                         element.removeClass( 'tablesort-asc' );
                         element.addClass( 'tablesort-desc' );
+                        element.attr('aria-sort', 'descending');
                         $scope.sortExpression[0][2] = true;
                     }
                     $scope.$emit( 'tablesort:sortOrder', [{
@@ -147,9 +149,11 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                     for( i=0; i<$scope.headings.length; i=i+1 ) {
                         $scope.headings[i]
                             .removeClass( 'tablesort-desc' )
-                            .removeClass( 'tablesort-asc' );
+                            .removeClass( 'tablesort-asc' )
+                            .removeAttr('aria-sort');
                     }
                     element.addClass( 'tablesort-asc' );
+                    element.attr('aria-sort', 'ascending');
                     $scope.sortExpression = [expr];
                     $scope.$emit( 'tablesort:sortOrder', [{
                       name: expr[3],
@@ -168,10 +172,12 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                         if( $scope.sortExpression[i][2] ) {
                             element.removeClass( 'tablesort-desc' );
                             element.addClass( 'tablesort-asc' );
+                            element.attr('aria-sort', 'ascending');
                             $scope.sortExpression[i][2] = false;
                         } else {
                             element.removeClass( 'tablesort-asc' );
                             element.addClass( 'tablesort-desc' );
+                            element.attr('aria-sort', 'descending');
                             $scope.sortExpression[i][2] = true;
                         }
                         toggle_order = true;
@@ -179,6 +185,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 }
                 if( !toggle_order ) {
                     element.addClass( 'tablesort-asc' );
+                    element.attr('aria-sort', 'ascending');
                     $scope.sortExpression.push( expr );
                 }
 
@@ -482,6 +489,7 @@ tableSortModule.directive( 'tsCriteria', function() {
             element[element.on ? 'on' : 'bind']('click', clickingCallback );
             element[element.on ? 'on' : 'bind']('keypress', keypressCallback ); //Add event handler for keypress call back
             element.addClass( 'tablesort-sortable' );
+            element.attr('tabindex', '0');
             if( 'tsDefault' in attrs && attrs.tsDefault !== '0' && attrs.tsDefault !== undefined ) {
                 tsWrapperCtrl.addSortField( attrs.tsCriteria, element, attrs.tsName, scope.tsOrderBy );
                 if( attrs.tsDefault === 'descending' ) {
