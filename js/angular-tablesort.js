@@ -129,7 +129,7 @@ tableSortModule.directive( 'tsWrapper', ['$parse', '$compile', function( $parse,
                 var i;
                 var expr = parse_sortexpr( sortexpr, name );
                 expr.push(sortBy);
-                if( $scope.sortExpression.length === 1 && $scope.sortExpression[0][0] === expr[0] ) {
+                if( $scope.sortExpression.length === 1 && $scope.sortExpression[0][3] === expr[3] ) {
                     if( $scope.sortExpression[0][2] ) {
                         element.removeClass( 'tablesort-desc' );
                         element.addClass( 'tablesort-asc' );
